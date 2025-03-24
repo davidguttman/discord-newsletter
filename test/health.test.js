@@ -1,5 +1,8 @@
 const test = require('tape')
 const request = require('supertest')
+
+// Set test environment before requiring app
+process.env.NODE_ENV = 'test'
 const app = require('../index')
 
 test('health endpoint returns 200 with uptime and timestamp', async (t) => {
