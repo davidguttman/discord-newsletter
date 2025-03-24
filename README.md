@@ -87,6 +87,8 @@ Messages are stored in MongoDB with the following schema:
   parentId: String,       // Parent channel ID (if message is in a thread)
   createdAt: Date,        // Message creation timestamp
   updatedAt: Date,        // Message last edit timestamp
+  replyToId: String,      // ID of message being replied to (if this is a reply)
+  mentionsReplyTarget: Boolean, // Whether the reply mentions original message author
   attachments: [{         // Array of attachments
     id: String,
     url: String,
@@ -100,4 +102,36 @@ Messages are stored in MongoDB with the following schema:
     url: String
   }]
 }
+```
+
+## Querying Messages
+
+### Finding Messages in Threads
+
+To find messages in threads using MongoDB, you can use these example queries:
+
+```javascript
+// Find all messages in any thread
+db.messages.find({ threadId: { $ne: null } })
+
+// Find messages in a specific thread
+db.messages.find({ threadId: "thread-id-here" })
+
+// Find all messages in threads under a specific channel
+db.messages.find({ parentId: "channel-id-here" })
+
+// Find messages in threads, sorted by creation time
+db.messages.find({ threadId: { $ne: null } })
+  .sort({ createdAt: -1 })
+
+// Group messages by thread and count them
+db.messages.aggregate([
+  { $match: { threadId: { $ne: null } } },
+  { $group: {
+    _id: "$threadId",
+    messageCount: { $sum: 1 },
+    firstMessage: { $first: "$content" },
+    lastMessageTime: { $max: "$createdAt" }
+  }}
+])
 ``` 
