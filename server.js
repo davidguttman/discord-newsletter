@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const config = require('./config')
 const mongoose = require('./lib/mongo')
+const discord = require('./lib/discord')
 const widgetsRouter = require('./api/widgets')
 const messagesRouter = require('./api/messages')
 const healthpoint = require('healthpoint')
@@ -56,6 +57,26 @@ app.use((err, req, res, next) => {
 // Only start the server if this file is run directly
 if (require.main === module) {
   const port = config.port
+
+  // Start Discord client
+  discord.start().catch(err => {
+    console.error('Failed to start Discord client:', err)
+    process.exit(1)
+  })
+
+  // Handle graceful shutdown
+  process.on('SIGINT', async () => {
+    console.log('Shutting down...')
+    await discord.stop()
+    process.exit(0)
+  })
+
+  process.on('SIGTERM', async () => {
+    console.log('Shutting down...')
+    await discord.stop()
+    process.exit(0)
+  })
+
   app.listen(port, () => {
     console.log('Server started on port', port)
   })

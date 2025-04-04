@@ -4,7 +4,7 @@
 - [x] Migrate Discord integration
   - [x] Move `lib/discord` to new structure
   - [x] Update Discord client initialization
-  - [ ] Test Discord connection
+  - [x] Test Discord connection
   - [ ] Refactor Discord library to separate concerns
     - [ ] Remove database operations from Discord library
     - [ ] Create a service layer to handle message processing
