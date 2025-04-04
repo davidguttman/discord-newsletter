@@ -9,7 +9,11 @@ const defaults = {
   googleProjectId: '',
   googleApplicationCredentials: '',
   authenticServer: '',
-  whitelist: ['david@davidguttman.com']
+  whitelist: ['david@davidguttman.com'],
+  // OpenAI configuration
+  openaiApiKey: '',
+  openaiModel: 'gpt-3.5-turbo',
+  openaiMaxTokens: 1000
 }
 
 // Merge defaults with environment variables
@@ -21,7 +25,11 @@ const config = {
   googleProjectId: process.env.GOOGLE_PROJECT_ID || defaults.googleProjectId,
   googleApplicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS || defaults.googleApplicationCredentials,
   authenticServer: process.env.AUTHENTIC_SERVER || defaults.authenticServer,
-  whitelist: (process.env.WHITELIST || defaults.whitelist.join(',')).split(',')
+  whitelist: (process.env.WHITELIST || defaults.whitelist.join(',')).split(','),
+  // OpenAI configuration
+  openaiApiKey: process.env.OPENAI_API_KEY || defaults.openaiApiKey,
+  openaiModel: process.env.OPENAI_MODEL || defaults.openaiModel,
+  openaiMaxTokens: process.env.OPENAI_MAX_TOKENS ? parseInt(process.env.OPENAI_MAX_TOKENS) : defaults.openaiMaxTokens
 }
 
 // Configure logging based on environment

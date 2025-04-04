@@ -31,6 +31,7 @@
     "mongodb": "^6.15.0",
     "mongodb-memory-server": "^10.1.4",
     "mongoose": "^8.13.1",
+    "openai": "^3.3.0",
     "productionize": "^5.0.0",
     "supertest": "^7.1.0",
     "tape": "^5.9.0"
