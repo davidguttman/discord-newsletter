@@ -1,0 +1,624 @@
+[
+  {
+    "raw": {
+      "id": "1357754120223588412",
+      "content": "plain text message",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:30:08.113Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754120223588412",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754166973432062",
+      "content": "user mention <@367727560869675018>",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:30:19.259Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": [
+          {
+            "id": "367727560869675018",
+            "username": "foxbarrington"
+          }
+        ]
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754166973432062",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754210107658240",
+      "content": "role mention <@&1014398560625754154>",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:30:29.543Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754210107658240",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754237131559003",
+      "content": "channel mention <#1014254487898177668>",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:30:35.986Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754237131559003",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754342127571076",
+      "content": "message with custom emoji <a:megaman:724460090618282063>",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:31:01.019Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754342127571076",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754391565963455",
+      "content": "message with standard emoji ⚡",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:31:12.806Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754391565963455",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754501603524670",
+      "content": "**message** `with` _markdown_",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:31:39.041Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754501603524670",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754552882954441",
+      "content": "message\n\nwith\n\nmultiple \n\nparagraphs",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:31:51.267Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754552882954441",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754588660236421",
+      "content": "message with url https://david.app",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:31:59.797Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": [
+        {
+          "title": "Misc . David Guttman . com",
+          "type": "rich",
+          "description": "Projects by David Guttman",
+          "url": "https://david.app/",
+          "timestamp": null,
+          "color": null,
+          "fields": [],
+          "thumbnail": {
+            "url": "https://misc.davidguttman.com/images/projects.png",
+            "proxyURL": "https://images-ext-1.discordapp.net/external/3VcfANA0IV9ysbBIDyM-ESddRV2_U4YV6lS5NgUxIEw/https/misc.davidguttman.com/images/projects.png",
+            "height": 1914,
+            "width": 1914
+          },
+          "image": null,
+          "author": null,
+          "footer": null
+        }
+      ]
+    },
+    "saved": {
+      "messageId": "1357754588660236421",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754706000347369",
+      "content": "reply without mention",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:32:27.773Z",
+      "editedAt": null,
+      "reference": {
+        "channelId": "1014254487898177668",
+        "guildId": "1014254487428407378",
+        "messageId": "1357754120223588412",
+        "type": "DEFAULT"
+      },
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754706000347369",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754804947910877",
+      "content": "reply with mention <@367727560869675018>",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:32:51.364Z",
+      "editedAt": null,
+      "reference": {
+        "channelId": "1014254487898177668",
+        "guildId": "1014254487428407378",
+        "messageId": "1357754552882954441",
+        "type": "DEFAULT"
+      },
+      "mentions": {
+        "users": [
+          {
+            "id": "367727560869675018",
+            "username": "foxbarrington"
+          }
+        ]
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754804947910877",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357754947856367799",
+      "content": "reply to bot message",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:33:25.436Z",
+      "editedAt": null,
+      "reference": {
+        "channelId": "1014254487898177668",
+        "guildId": "1014254487428407378",
+        "messageId": "1214263022114054174",
+        "type": "DEFAULT"
+      },
+      "mentions": {
+        "users": [
+          {
+            "id": "1022295567298220062",
+            "username": "sewerbot-dev"
+          }
+        ]
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357754947856367799",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357755015476940822",
+      "content": "thread starter message",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:33:41.558Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357755015476940822",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357755058225283343",
+      "content": "",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1357755015476940822",
+        "isThread": true,
+        "parentId": "1014254487898177668"
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:33:51.750Z",
+      "editedAt": null,
+      "reference": {
+        "channelId": "1014254487898177668",
+        "guildId": "1014254487428407378",
+        "messageId": "1357755015476940822",
+        "type": "DEFAULT"
+      },
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357755058225283343",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357755060553126270",
+      "content": "regular message in thread",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1357755015476940822",
+        "isThread": true,
+        "parentId": "1014254487898177668"
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:33:52.305Z",
+      "editedAt": null,
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357755060553126270",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357755131902558308",
+      "content": "reply to message with attachment",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:34:09.316Z",
+      "editedAt": null,
+      "reference": {
+        "channelId": "1014254487898177668",
+        "guildId": "1014254487428407378",
+        "messageId": "1357511792439328859",
+        "type": "DEFAULT"
+      },
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357755131902558308",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357755175946817726",
+      "content": "message edit: this is the edit",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:34:19.817Z",
+      "editedAt": "2025-04-04T16:34:55.732Z",
+      "reference": null,
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357755175946817726",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  },
+  {
+    "raw": {
+      "id": "1357755260243935342",
+      "content": "reply to message that is later edited",
+      "author": {
+        "id": "367727560869675018",
+        "username": "foxbarrington"
+      },
+      "channel": {
+        "id": "1014254487898177668",
+        "isThread": false,
+        "parentId": null
+      },
+      "guild": {
+        "id": "1014254487428407378"
+      },
+      "createdAt": "2025-04-04T16:34:39.915Z",
+      "editedAt": null,
+      "reference": {
+        "channelId": "1014254487898177668",
+        "guildId": "1014254487428407378",
+        "messageId": "1357755175946817726",
+        "type": "DEFAULT"
+      },
+      "mentions": {
+        "users": []
+      },
+      "attachments": [],
+      "embeds": []
+    },
+    "saved": {
+      "messageId": "1357755260243935342",
+      "wasUpdated": false,
+      "wasInserted": true
+    }
+  }
+]

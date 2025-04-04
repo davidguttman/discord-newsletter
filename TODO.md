@@ -4,27 +4,27 @@
 To collect fixtures, set `COLLECT_FIXTURES=1` in your environment. Messages will be saved to `test/fixtures/discord-messages-{timestamp}.json`.
 
 ### Basic Messages
-- [ ] Plain text message
-- [ ] Message with user mention (@user)
-- [ ] Message with role mention (@role)
-- [ ] Message with channel mention (#channel)
-- [ ] Message with custom emoji
-- [ ] Message with standard emoji
-- [ ] Message with markdown (bold, italic, code blocks)
-- [ ] Message with multiple paragraphs
-- [ ] Message with URLs
+- [x] Plain text message
+- [x] Message with user mention (@user)
+- [x] Message with role mention (@role)
+- [x] Message with channel mention (#channel)
+- [x] Message with custom emoji
+- [x] Message with standard emoji
+- [x] Message with markdown (bold, italic, code blocks)
+- [x] Message with multiple paragraphs
+- [x] Message with URLs
 
 ### Reply Messages
-- [ ] Reply without mentioning the original author
-- [ ] Reply with mentioning the original author
-- [ ] Reply to a bot message
-- [ ] Reply to a message in a thread
-- [ ] Reply to a message that includes an attachment
-- [ ] Reply to a message that was edited
+- [x] Reply without mentioning the original author
+- [x] Reply with mentioning the original author
+- [x] Reply to a bot message
+- [x] Reply to a message in a thread
+- [x] Reply to a message that includes an attachment
+- [x] Reply to a message that was edited
 
 ### Thread Messages
-- [ ] Thread starter message
-- [ ] Regular message in thread
+- [x] Thread starter message
+- [x] Regular message in thread
 - [ ] Message that mentions the thread starter
 - [ ] Message that references another thread
 - [ ] Message in an archived thread
@@ -39,7 +39,7 @@ To collect fixtures, set `COLLECT_FIXTURES=1` in your environment. Messages will
 - [ ] Message with only attachments (no text)
 
 ### Embeds
-- [ ] Message with link preview
+- [x] Message with link preview (from david.app URL)
 - [ ] Message with YouTube video
 - [ ] Message with Twitter/social media preview
 - [ ] Message with rich embed (title, description, fields)
@@ -47,13 +47,13 @@ To collect fixtures, set `COLLECT_FIXTURES=1` in your environment. Messages will
 - [ ] Message with failed/invalid embed
 
 ### Edge Cases
-- [ ] Empty message (just attachments)
+- [x] Empty message (just attachments) - we have one in the thread
 - [ ] Very long message (near Discord limit)
 - [ ] Message with only whitespace/newlines
 - [ ] Message with unusual Unicode characters
-- [ ] Edited message
+- [x] Edited message
 - [ ] Message from a user who left the server
-- [ ] Message that was edited multiple times
+- [x] Message that was edited multiple times
 - [ ] Message with maximum number of attachments
 - [ ] Message with maximum number of embeds
 - [ ] Message with maximum number of mentions
