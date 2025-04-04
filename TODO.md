@@ -14,17 +14,17 @@
   - [x] Create MongoDB models for messages
   - [x] Migrate database connection code
   - [x] Test database connection
-  - [ ] Fix MongoDB connection in test environment
-  - [ ] Fix embeds schema validation
-  - [ ] Ensure proper database cleanup in tests
+  - [x] Fix MongoDB connection in test environment
+  - [x] Fix embeds schema validation
+  - [x] Ensure proper database cleanup in tests
 
 - [x] API Routes
   - [x] Create health check endpoint using healthpoint
   - [x] Set up message archiving endpoints
   - [x] Test API endpoints
-  - [ ] Fix health check database integration
-  - [ ] Fix widgets API 500 errors
-  - [ ] Add proper error handling for widgets API
+  - [x] Fix health check database integration
+  - [x] Fix widgets API 500 errors
+  - [x] Add proper error handling for widgets API
 
 - [ ] Scripts
   - [ ] Migrate archive-messages script
@@ -34,11 +34,11 @@
   - [x] Migrate existing tests
   - [x] Add new tests for migrated code
   - [x] Ensure all tests pass
-  - [ ] Fix failing tests:
-    - [ ] Health check tests
-    - [ ] Widgets API tests
-    - [ ] Message model tests
-    - [ ] MongoDB connection tests
+  - [x] Fix failing tests:
+    - [x] Health check tests
+    - [x] Widgets API tests
+    - [x] Message model tests
+    - [x] MongoDB connection tests
 
 ## Environment
 - [ ] Verify all environment variables are properly configured

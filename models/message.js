@@ -26,7 +26,8 @@ const messageSchema = new mongoose.Schema({
     type: String
   },
   threadId: {
-    type: String
+    type: String,
+    default: null
   },
   parentId: {
     type: String
@@ -40,7 +41,8 @@ const messageSchema = new mongoose.Schema({
     required: true
   },
   replyToId: {
-    type: String
+    type: String,
+    default: null
   },
   mentionsReplyTarget: {
     type: Boolean,
