@@ -3,7 +3,6 @@ const express = require('express')
 const config = require('./config')
 const mongoose = require('./lib/mongo')
 const discord = require('./lib/discord')
-const widgetsRouter = require('./api/widgets')
 const messagesRouter = require('./api/messages')
 const healthpoint = require('healthpoint')
 
@@ -29,10 +28,8 @@ app.get('/health', health)
 if (process.env.NODE_ENV === 'test') {
   // In test environment, use mock auth
   const mockAuth = require('./test/helpers/mock-auth')
-  app.use('/widgets', mockAuth, widgetsRouter)
   app.use('/messages', mockAuth, messagesRouter)
 } else {
-  app.use('/widgets', widgetsRouter)
   app.use('/messages', messagesRouter)
 }
 

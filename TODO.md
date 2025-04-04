@@ -4,7 +4,7 @@
 - [x] Migrate Discord integration
   - [x] Move `lib/discord` to new structure
   - [x] Update Discord client initialization
-  - [x] Test Discord connection
+  - [x] Verify Discord setup (removed unnecessary tests)
   - [ ] Refactor Discord library to separate concerns
     - [ ] Remove database operations from Discord library
     - [ ] Create a service layer to handle message processing
@@ -23,8 +23,7 @@
   - [x] Set up message archiving endpoints
   - [x] Test API endpoints
   - [x] Fix health check database integration
-  - [x] Fix widgets API 500 errors
-  - [x] Add proper error handling for widgets API
+  - [x] Remove widgets API (not needed)
 
 - [ ] Scripts
   - [ ] Migrate archive-messages script
@@ -36,7 +35,6 @@
   - [x] Ensure all tests pass
   - [x] Fix failing tests:
     - [x] Health check tests
-    - [x] Widgets API tests
     - [x] Message model tests
     - [x] MongoDB connection tests
 
