@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const authMiddleware = require('../middleware/auth')
 const autoCatch = require('../lib/auto-catch')
 const Widget = require('../models/widget')
 const middleware = require('../middleware')
@@ -170,4 +169,4 @@ router.delete('/:id', ...middleware, autoCatch(async (req, res) => {
   res.status(204).send()
 }))
 
-module.exports = router 
+module.exports = router

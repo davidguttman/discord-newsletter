@@ -226,4 +226,4 @@ test('cleanup', async t => {
   await db.disconnect()
   await mongod.stop()
   t.end()
-}) 
+})

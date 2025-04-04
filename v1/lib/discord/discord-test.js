@@ -10,4 +10,4 @@ async function stop () {
 module.exports = {
   start,
   stop
-} 
+}

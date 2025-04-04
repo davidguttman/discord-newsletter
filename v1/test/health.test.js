@@ -17,4 +17,4 @@ test('health endpoint returns 200 with uptime and timestamp', async (t) => {
     t.error(err)
     t.end()
   }
-}) 
+})

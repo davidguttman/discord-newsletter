@@ -49,14 +49,14 @@ async function handleMessage (message) {
       if (message.guild.id === guildId && message.channel.id === channelId) {
         return true
       }
-      
+
       // Check if message is in a thread of the configured channel
-      if (message.guild.id === guildId && 
-          message.channel.isThread() && 
+      if (message.guild.id === guildId &&
+          message.channel.isThread() &&
           message.channel.parentId === channelId) {
         return true
       }
-      
+
       return false
     }
   )
@@ -74,4 +74,4 @@ async function handleMessage (message) {
 module.exports = {
   start,
   stop
-} 
+}

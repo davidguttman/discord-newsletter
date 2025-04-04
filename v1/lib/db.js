@@ -25,7 +25,7 @@ async function saveMessage (message) {
   if (!db) await connect()
 
   const collection = db.collection('messages')
-  
+
   const messageData = {
     id: message.id,
     content: message.content,
@@ -70,4 +70,4 @@ module.exports = {
   connect,
   disconnect,
   saveMessage
-} 
+}

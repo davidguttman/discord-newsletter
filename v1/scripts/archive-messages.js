@@ -92,12 +92,12 @@ async function archiveMessages (options) {
 
     console.log(`Archiving messages from ${channel.name} (${options.start.toISOString()} to ${options.end.toISOString()})`)
 
-    let totalStats = {
+    const totalStats = {
       total: 0,
       updated: 0,
       new: 0
     }
-    
+
     // Archive messages from the main channel
     const mainChannelStats = await archiveChannelMessages(channel, options)
     Object.keys(totalStats).forEach(key => { totalStats[key] += mainChannelStats[key] })
@@ -110,7 +110,7 @@ async function archiveMessages (options) {
       Object.keys(totalStats).forEach(key => { totalStats[key] += threadStats[key] })
     }
 
-    console.log(`\nArchiving complete!`)
+    console.log('\nArchiving complete!')
     console.log(`Total messages processed: ${totalStats.total}`)
     console.log(`New messages: ${totalStats.new}`)
     console.log(`Updated messages: ${totalStats.updated}`)
@@ -124,7 +124,7 @@ async function archiveMessages (options) {
 }
 
 async function archiveChannelMessages (channel, options) {
-  let stats = {
+  const stats = {
     total: 0,
     updated: 0,
     new: 0
@@ -154,7 +154,7 @@ async function archiveChannelMessages (channel, options) {
         stats.total++
         if (result.wasUpdated) stats.updated++
         if (result.wasInserted) stats.new++
-        
+
         if (stats.total % 100 === 0) {
           console.log(`Progress: ${stats.total} messages processed (${stats.new} new, ${stats.updated} updated)`)
         }
@@ -174,4 +174,4 @@ parseArgs()
   .catch(err => {
     console.error('Error:', err.message)
     process.exit(1)
-  }) 
+  })
