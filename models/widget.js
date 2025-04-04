@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('../lib/mongo')
 const cuid = require('cuid')
 
 const widgetSchema = new mongoose.Schema({
@@ -31,4 +31,4 @@ const widgetSchema = new mongoose.Schema({
   }
 })
 
-module.exports = mongoose.model('Widget', widgetSchema) 
+module.exports = mongoose.model('Widget', widgetSchema)

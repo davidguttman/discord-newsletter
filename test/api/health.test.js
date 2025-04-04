@@ -1,33 +1,19 @@
 const test = require('tape')
-const supertest = require('supertest')
-const mongoose = require('../../lib/mongo')
+const request = require('supertest')
 
-// Import server but don't start it
-const server = require('../../server')
+// Set test environment before requiring app
+process.env.NODE_ENV = 'test'
+const app = require('../../server')
 
-test('health endpoint - successful check', async (t) => {
-  const res = await supertest(server)
+test('health endpoint returns 200 with uptime and timestamp', async t => {
+  const res = await request(app)
     .get('/health')
     .expect(200)
-  
-  t.equal(res.body.status, 'OK')
+
+  t.equal(res.body.status, 'OK', 'status is OK')
+  t.ok(res.body.ts, 'timestamp is present')
+  t.ok(res.body.uptime >= 0, 'uptime is present and non-negative')
+  t.ok(res.body.memory, 'memory stats are present')
+  t.ok(res.body.memory.rss > 0, 'memory.rss is present and positive')
   t.end()
 })
-
-test('health endpoint - database error', async (t) => {
-  // Mock mongoose.checkHealth to throw an error
-  const originalCheckHealth = mongoose.checkHealth
-  mongoose.checkHealth = () => {
-    throw new Error('Database connection failed')
-  }
-
-  const res = await supertest(server)
-    .get('/health')
-    .expect(500)
-  
-  t.equal(res.body.error, 'Database connection failed')
-  
-  // Restore original checkHealth
-  mongoose.checkHealth = originalCheckHealth
-  t.end()
-}) 

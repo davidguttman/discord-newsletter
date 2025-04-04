@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('../lib/mongo')
 
 const messageSchema = new mongoose.Schema({
   id: {
@@ -53,7 +53,10 @@ const messageSchema = new mongoose.Schema({
     size: Number
   }],
   embeds: [{
-    type: String,
+    type: {
+      type: String,
+      required: true
+    },
     title: String,
     description: String,
     url: String
@@ -68,4 +71,4 @@ messageSchema.index({ createdAt: 1 })
 
 const Message = mongoose.model('Message', messageSchema)
 
-module.exports = Message 
+module.exports = Message

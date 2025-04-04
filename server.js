@@ -12,17 +12,14 @@ const app = express()
 app.use(express.json())
 
 // Create healthcheck endpoint with healthpoint
-const health = healthpoint({
-  uptime: true,
-  message: 'OK',
-  timestamp: true,
-  checks: {
-    database: async () => {
-      await mongoose.checkHealth()
-      return { status: 'OK' }
-    }
+const health = healthpoint(
+  function (cb) {
+    mongoose
+      .checkHealth()
+      .then(() => cb())
+      .catch(cb)
   }
-})
+)
 
 // Health check endpoint
 app.get('/health', health)
@@ -51,7 +48,9 @@ app.use((err, req, res, next) => {
   }
 
   // Handle other errors
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' })
+  res
+    .status(err.status || 500)
+    .json({ error: err.message || 'Internal Server Error' })
 })
 
 // Only start the server if this file is run directly
