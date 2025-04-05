@@ -13,7 +13,11 @@ const defaults = {
   // OpenAI configuration
   openaiApiKey: '',
   openaiModel: 'gpt-3.5-turbo',
-  openaiMaxTokens: 1000
+  openaiMaxTokens: 1000,
+  // Mailgun configuration
+  mailgunApiKey: '',
+  mailgunDomain: '',
+  mailgunFrom: 'Discord Newsletter <newsletter@example.com>'
 }
 
 // Merge defaults with environment variables
@@ -29,7 +33,11 @@ const config = {
   // OpenAI configuration
   openaiApiKey: process.env.OPENAI_API_KEY || defaults.openaiApiKey,
   openaiModel: process.env.OPENAI_MODEL || defaults.openaiModel,
-  openaiMaxTokens: process.env.OPENAI_MAX_TOKENS ? parseInt(process.env.OPENAI_MAX_TOKENS) : defaults.openaiMaxTokens
+  openaiMaxTokens: process.env.OPENAI_MAX_TOKENS ? parseInt(process.env.OPENAI_MAX_TOKENS) : defaults.openaiMaxTokens,
+  // Mailgun configuration
+  mailgunApiKey: process.env.MAILGUN_API_KEY || defaults.mailgunApiKey,
+  mailgunDomain: process.env.MAILGUN_DOMAIN || defaults.mailgunDomain,
+  mailgunFrom: process.env.MAILGUN_FROM || defaults.mailgunFrom
 }
 
 // Configure logging based on environment
