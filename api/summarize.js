@@ -33,13 +33,11 @@ router.get('/debug/:channelId', autoCatch(async (req, res) => {
     return res.status(404).json({ error: 'No messages found for the specified channel and time range' })
   }
 
-  // Format messages based on requested format
-  const formattedMessages = messageFormatter.formatMessages(messages, { format })
-
-  // Handle TXT format separately
+  // Handle TXT format directly
   if (format.toLowerCase() === 'txt') {
     res.setHeader('Content-Type', 'text/plain')
-    return res.send(formattedMessages)
+    const formattedText = messageFormatter.formatMessages(messages, { format: 'txt' })
+    return res.send(formattedText)
   }
 
   // Default JSON response
@@ -48,7 +46,7 @@ router.get('/debug/:channelId', autoCatch(async (req, res) => {
     startDate,
     endDate,
     messageCount: messages.length,
-    formattedMessages
+    formattedMessages: messages // Return raw messages for JSON format
   })
 }))
 
