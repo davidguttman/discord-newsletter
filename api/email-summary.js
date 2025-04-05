@@ -44,6 +44,8 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
     $lte: endDate
   }
 
+  console.log('query', query)
+
   // Get messages
   const messages = await Message.find(query).sort({ createdAt: 1 })
 
@@ -52,6 +54,8 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
       error: 'No messages found for the specified channel and time range'
     })
   }
+
+  console.log('messages', messages.slice(0, 10))
 
   // Format messages into a readable conversation
   const formattedMessages = formatter.formatThreadedMessages(messages)
