@@ -6,6 +6,13 @@ const Message = require('../../models/message')
 process.env.NODE_ENV = 'test'
 const app = require('../../server')
 
+// Clear database before tests
+test('Setup - clear message database', async t => {
+  await Message.deleteMany({})
+  t.pass('Database cleared')
+  t.end()
+})
+
 test('GET /messages - returns empty list when no messages', async t => {
   const response = await request(app).get('/messages')
   t.equal(response.status, 200)

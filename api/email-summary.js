@@ -2,7 +2,7 @@ const express = require('express')
 const ms = require('ms')
 const autoCatch = require('../lib/auto-catch')
 const Message = require('../models/message')
-const formatter = require('../lib/formatters/message-formatter')
+const messageFormatter = require('../lib/message-formatter')
 const openai = require('../lib/openai')
 const email = require('../lib/email')
 const marked = require('marked')
@@ -58,7 +58,7 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
   console.log('messages', messages.slice(0, 10))
 
   // Format messages into a readable conversation
-  const formattedMessages = formatter.formatThreadedMessages(messages)
+  const formattedMessages = messageFormatter.formatMessages(messages, { format: 'txt' })
 
   console.log('formattedMessages', formattedMessages.slice(0, 500))
 

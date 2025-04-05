@@ -1,6 +1,7 @@
 const express = require('express')
 const autoCatch = require('../lib/auto-catch')
 const Message = require('../models/message')
+const messageFormatter = require('../lib/message-formatter')
 
 const router = express.Router()
 
@@ -13,7 +14,8 @@ router.get('/', autoCatch(async (req, res) => {
     startDate,
     endDate,
     page = 1,
-    limit = 50
+    limit = 50,
+    format = 'json'
   } = req.query
 
   // Build query
@@ -39,6 +41,14 @@ router.get('/', autoCatch(async (req, res) => {
   // Get total count for pagination
   const total = await Message.countDocuments(query)
 
+  // Handle TXT format separately
+  if (format.toLowerCase() === 'txt') {
+    res.setHeader('Content-Type', 'text/plain')
+    const formattedText = messageFormatter.formatMessages(messages, { format: 'txt' })
+    return res.send(formattedText)
+  }
+
+  // Default JSON response
   res.json({
     messages,
     pagination: {
@@ -63,7 +73,7 @@ router.get('/:id', autoCatch(async (req, res) => {
 
 // Get messages from a specific thread
 router.get('/thread/:threadId', autoCatch(async (req, res) => {
-  const { page = 1, limit = 50 } = req.query
+  const { page = 1, limit = 50, format = 'json' } = req.query
   const skip = (page - 1) * limit
 
   const messages = await Message.find({ threadId: req.params.threadId })
@@ -73,6 +83,14 @@ router.get('/thread/:threadId', autoCatch(async (req, res) => {
 
   const total = await Message.countDocuments({ threadId: req.params.threadId })
 
+  // Handle TXT format separately
+  if (format.toLowerCase() === 'txt') {
+    res.setHeader('Content-Type', 'text/plain')
+    const formattedText = messageFormatter.formatMessages(messages, { format: 'txt' })
+    return res.send(formattedText)
+  }
+
+  // Default JSON response
   res.json({
     messages,
     pagination: {

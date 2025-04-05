@@ -1,7 +1,7 @@
 const express = require('express')
 const autoCatch = require('../lib/auto-catch')
 const Message = require('../models/message')
-const formatter = require('../lib/formatters/message-formatter')
+const messageFormatter = require('../lib/message-formatter')
 const openai = require('../lib/openai')
 const marked = require('marked')
 
@@ -10,7 +10,7 @@ const router = express.Router()
 // Debug endpoint to see raw formatted messages
 router.get('/debug/:channelId', autoCatch(async (req, res) => {
   const { channelId } = req.params
-  const { startDate, endDate } = req.query
+  const { startDate, endDate, format = 'json' } = req.query
 
   // Validate required parameters
   if (!startDate || !endDate) {
@@ -33,9 +33,16 @@ router.get('/debug/:channelId', autoCatch(async (req, res) => {
     return res.status(404).json({ error: 'No messages found for the specified channel and time range' })
   }
 
-  // Format messages into a readable conversation
-  const formattedMessages = formatter.formatThreadedMessages(messages)
+  // Format messages based on requested format
+  const formattedMessages = messageFormatter.formatMessages(messages, { format })
 
+  // Handle TXT format separately
+  if (format.toLowerCase() === 'txt') {
+    res.setHeader('Content-Type', 'text/plain')
+    return res.send(formattedMessages)
+  }
+
+  // Default JSON response
   res.json({
     channelId,
     startDate,
@@ -85,7 +92,7 @@ router.get('/channel/:channelId', autoCatch(async (req, res) => {
   }
 
   // Format messages into a readable conversation
-  const formattedMessages = formatter.formatThreadedMessages(messages)
+  const formattedMessages = messageFormatter.formatMessages(messages, { format: 'txt' })
 
   // Generate summary using OpenAI
   const options = {}

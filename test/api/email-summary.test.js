@@ -23,6 +23,13 @@ test.onFinish(() => {
   email.sendEmail = originalSendEmail
 })
 
+// Clear specific test messages before tests
+test('Setup - clear email test messages', async t => {
+  await Message.deleteMany({ channelId: 'channel-email' })
+  t.pass('Email test messages cleared')
+  t.end()
+})
+
 test('POST /email-summary/channel/:channelId - requires to parameter', async t => {
   const response = await request(app)
     .post('/email-summary/channel/channel1')
@@ -79,6 +86,7 @@ test('POST /email-summary/channel/:channelId - sends email summary', async t => 
       authorId: 'user1',
       authorUsername: 'testuser1',
       channelId: 'channel-email',
+      channelName: 'email-channel',
       guildId: 'guild1',
       createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
       updatedAt: new Date(Date.now() - 1000 * 60 * 60),
@@ -91,6 +99,7 @@ test('POST /email-summary/channel/:channelId - sends email summary', async t => 
       authorId: 'user2',
       authorUsername: 'testuser2',
       channelId: 'channel-email',
+      channelName: 'email-channel',
       guildId: 'guild1',
       createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
       updatedAt: new Date(Date.now() - 1000 * 60 * 30),

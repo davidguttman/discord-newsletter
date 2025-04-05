@@ -6,6 +6,13 @@ const Message = require('../../models/message')
 process.env.NODE_ENV = 'test'
 const app = require('../../server')
 
+// Clear specific test messages before tests
+test('Setup - clear summary test messages', async t => {
+  await Message.deleteMany({ channelId: 'channel-summary' })
+  t.pass('Summary test messages cleared')
+  t.end()
+})
+
 test('GET /summarize/channel/:channelId - returns 400 without date range', async t => {
   const response = await request(app)
     .get('/summarize/channel/channel1')
@@ -38,6 +45,7 @@ test('GET /summarize/channel/:channelId - returns summary of messages', async t 
       authorId: 'user1',
       authorUsername: 'testuser1',
       channelId: 'channel-summary',
+      channelName: 'summary-channel',
       guildId: 'guild1',
       createdAt: new Date('2024-01-01T10:00:00Z'),
       updatedAt: new Date('2024-01-01T10:00:00Z'),
@@ -50,6 +58,7 @@ test('GET /summarize/channel/:channelId - returns summary of messages', async t 
       authorId: 'user2',
       authorUsername: 'testuser2',
       channelId: 'channel-summary',
+      channelName: 'summary-channel',
       guildId: 'guild1',
       createdAt: new Date('2024-01-01T10:05:00Z'),
       updatedAt: new Date('2024-01-01T10:05:00Z'),
