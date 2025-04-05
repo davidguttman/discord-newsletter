@@ -60,6 +60,8 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
   // Format messages into a readable conversation
   const formattedMessages = formatter.formatThreadedMessages(messages)
 
+  console.log('formattedMessages', formattedMessages.slice(0, 500))
+
   // Generate summary using OpenAI
   const options = {}
   if (model) options.model = model

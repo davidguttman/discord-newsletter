@@ -22,7 +22,14 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  channelName: {
+    type: String,
+    required: true
+  },
   guildId: {
+    type: String
+  },
+  guildName: {
     type: String
   },
   threadId: {

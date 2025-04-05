@@ -24,6 +24,8 @@ test('GET /messages - returns messages with pagination', async t => {
       authorUsername: 'testuser1',
       channelId: 'channel1',
       guildId: 'guild1',
+      guildName: 'Test Guild 1',
+      channelName: 'general',
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01')
     },
@@ -34,6 +36,8 @@ test('GET /messages - returns messages with pagination', async t => {
       authorUsername: 'testuser2',
       channelId: 'channel1',
       guildId: 'guild1',
+      guildName: 'Test Guild 1',
+      channelName: 'general',
       createdAt: new Date('2024-01-02'),
       updatedAt: new Date('2024-01-02')
     },
@@ -44,6 +48,8 @@ test('GET /messages - returns messages with pagination', async t => {
       authorUsername: 'testuser1',
       channelId: 'channel2',
       guildId: 'guild1',
+      guildName: 'Test Guild 1',
+      channelName: 'announcements',
       createdAt: new Date('2024-01-03'),
       updatedAt: new Date('2024-01-03')
     }
@@ -105,6 +111,8 @@ test('GET /messages/thread/:threadId - returns thread messages', async t => {
     authorUsername: 'testuser1',
     channelId: 'thread1',
     guildId: 'guild1',
+    guildName: 'Test Guild 1',
+    channelName: 'thread-parent',
     threadId: 'thread1',
     parentId: 'channel1',
     createdAt: new Date(),
