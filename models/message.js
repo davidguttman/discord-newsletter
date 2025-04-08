@@ -71,7 +71,7 @@ const messageSchema = new mongoose.Schema({
     url: String
   }]
 }, {
-  timestamps: true
+  // timestamps: true // Removed as createdAt/updatedAt are handled explicitly
 })
 
 // Create index for faster queries
