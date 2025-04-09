@@ -1,24 +1,27 @@
-# Start Light Express 🌟
+# Discord Newsletter 📰
 
-A lightweight, illuminating Express.js starter template that guides you toward production-ready Node.js applications.
+Fetches messages from Discord channels, summarizes them using AI, and emails the summary.
 
 ## Features ✨
 
 - **Express Server**: Fast and minimalist web framework
 - **MongoDB Integration**: With Mongoose ORM and in-memory testing
+- **Discord Integration**: Connects to Discord API to fetch messages
+- **OpenAI Integration**: Uses OpenAI API for message summarization
+- **Mailgun Integration**: Sends email summaries via Mailgun API
 - **Authentication**: Built-in auth middleware with test environment support
 - **Testing**: Comprehensive test setup with tape and supertest
 - **Error Handling**: Automatic error catching and formatting
 - **Health Checks**: Built-in monitoring endpoint
 - **Environment Config**: Easy configuration with dotenv
-- **API Example**: Complete CRUD endpoints (Widgets API)
+- **API Endpoints**: Fetch messages, trigger summarization, and email summaries
 
 ## Quick Start 🚀
 
 1. Clone and install:
 ```bash
-git clone https://github.com/davidguttman/start-light-express.git
-cd start-light-express
+git clone https://github.com/davidguttman/discord-newsletter.git 
+cd discord-newsletter
 npm install
 ```
 
@@ -27,16 +30,32 @@ npm install
 cp .env.example .env
 ```
 
-3. Configure your environment variables:
+3. Configure your environment variables in `.env`:
 ```env
 PORT=3000
 MONGO_URI=mongodb://localhost:27017/
-MONGO_DB_NAME=example
-GOOGLE_PROJECT_ID=your-project-id
-GOOGLE_APPLICATION_CREDENTIALS=path/to/credentials.json
-AUTHENTIC_SERVER=your-authentic-server
-WHITELIST=email1@example.com,email2@example.com
+MONGO_DB_NAME=discord-newsletter # Or your preferred DB name
+GOOGLE_PROJECT_ID=your-project-id # Optional for production logging
+GOOGLE_APPLICATION_CREDENTIALS=path/to/credentials.json # Optional for production logging
+AUTHENTIC_SERVER=your-authentic-server # Optional for authentication
+WHITELIST=email1@example.com,email2@example.com # Optional for authentication
+
+# Discord Configuration
+DISCORD_BOT_TOKEN=your_discord_bot_token
+DISCORD_CHANNEL_ID=your_discord_channel_id
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o-mini # Or your preferred model
+OPENAI_MAX_TOKENS=10000 # Optional
+
+# Mailgun Configuration
+MAILGUN_API_KEY=your_mailgun_api_key
+MAILGUN_DOMAIN=your_mailgun_domain
+MAILGUN_FROM="Discord Newsletter <newsletter@yourdomain.com>" # Customize sender
+MAILGUN_TO=recipient@example.com # Default recipient
 ```
+*Make sure to replace placeholders like `<YOUR_REPOSITORY_URL>`, `your_discord_bot_token`, etc. with your actual values.*
 
 4. Start developing:
 ```bash
@@ -49,6 +68,7 @@ The development server will restart on file changes:
 ```bash
 npm run dev
 ```
+It also starts the Discord bot connection.
 
 ## Testing 🧪
 
@@ -62,6 +82,7 @@ Features:
 - Supertest for HTTP assertions
 - In-memory MongoDB for database tests
 - Predictable test authentication
+- Mock Discord client for testing
 
 ## Production 🌎
 
@@ -75,25 +96,28 @@ npm start
 
 ```
 .
-├── api/              # API routes
-├── config/           # Configuration
-├── lib/             # Shared libraries
-├── middleware/      # Express middleware
-├── models/          # Mongoose models
-├── test/            # Test files
-├── .env.example     # Example environment variables
-├── package.json     # Project configuration
-└── server.js        # Application entry point
+├── api/              # API route handlers
+├── config/           # Configuration loader (config/index.js, .env*)
+├── lib/              # Shared libraries (Discord, Mongo, OpenAI, Mailgun)
+├── middleware/       # Express middleware (e.g., authentication)
+├── models/           # Mongoose models (e.g., Message)
+├── routes/           # Express route definitions (deprecated, see api/)
+├── scripts/          # Utility scripts
+├── test/             # Test files and helpers
+├── .env.example      # Example environment variables
+├── package.json      # Project configuration
+└── server.js         # Application entry point
 ```
+*(Note: The `routes/` directory might be deprecated or unused in favor of `api/`)*
 
 ## API Endpoints 🛣️
 
-- `GET /health` - Health check
-- `GET /widgets` - List widgets
-- `POST /widgets` - Create widget
-- `GET /widgets/:id` - Get widget
-- `PUT /widgets/:id` - Update widget
-- `DELETE /widgets/:id` - Delete widget
+- `GET /health` - Health check (includes MongoDB connection status)
+- `GET /messages` - Fetch and store messages from the configured Discord channel
+- `POST /summarize` - Generate a summary of stored messages using OpenAI
+- `POST /email-summary` - Send the generated summary via email using Mailgun
+
+*(Authentication might be required for some endpoints depending on the setup)*
 
 ## Code Style 📝
 
