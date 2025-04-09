@@ -12,8 +12,8 @@ const defaults = {
   whitelist: ['david@davidguttman.com'],
   // OpenAI configuration
   openaiApiKey: '',
-  openaiModel: 'gpt-3.5-turbo',
-  openaiMaxTokens: 1000,
+  openaiModel: 'gpt-4o-mini',
+  openaiMaxTokens: 10000,
   // Mailgun configuration
   mailgunApiKey: '',
   mailgunDomain: '',

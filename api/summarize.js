@@ -7,49 +7,6 @@ const marked = require('marked')
 
 const router = express.Router()
 
-// Debug endpoint to see raw formatted messages
-router.get('/debug/:channelId', autoCatch(async (req, res) => {
-  const { channelId } = req.params
-  const { startDate, endDate, format = 'json' } = req.query
-
-  // Validate required parameters
-  if (!startDate || !endDate) {
-    return res.status(400).json({ error: 'startDate and endDate query parameters are required' })
-  }
-
-  // Build query
-  const query = { channelId }
-
-  // Date range filter
-  query.createdAt = {
-    $gte: new Date(startDate),
-    $lte: new Date(endDate)
-  }
-
-  // Get messages
-  const messages = await Message.find(query).sort({ createdAt: 1 })
-
-  if (messages.length === 0) {
-    return res.status(404).json({ error: 'No messages found for the specified channel and time range' })
-  }
-
-  // Handle TXT format directly
-  if (format.toLowerCase() === 'txt') {
-    res.setHeader('Content-Type', 'text/plain')
-    const formattedText = messageFormatter.formatMessages(messages, { format: 'txt' })
-    return res.send(formattedText)
-  }
-
-  // Default JSON response
-  res.json({
-    channelId,
-    startDate,
-    endDate,
-    messageCount: messages.length,
-    formattedMessages: messages // Return raw messages for JSON format
-  })
-}))
-
 // Summarize messages by channel and time range
 router.get('/channel/:channelId', autoCatch(async (req, res) => {
   const {
@@ -109,6 +66,11 @@ router.get('/channel/:channelId', autoCatch(async (req, res) => {
     })
     res.setHeader('Content-Type', 'text/html')
     return res.send(htmlContent)
+  }
+
+  if (format === 'txt') {
+    res.setHeader('Content-Type', 'text/plain')
+    return res.send(summary.summary)
   }
 
   // Otherwise return JSON response

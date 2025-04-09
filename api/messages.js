@@ -14,7 +14,7 @@ router.get('/', autoCatch(async (req, res) => {
     startDate,
     endDate,
     page = 1,
-    limit = 50,
+    limit = 500,
     format = 'json'
   } = req.query
 
@@ -34,7 +34,7 @@ router.get('/', autoCatch(async (req, res) => {
   // Execute query with pagination
   const skip = (page - 1) * limit
   const messages = await Message.find(query)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: 1 })
     .skip(skip)
     .limit(parseInt(limit))
 
