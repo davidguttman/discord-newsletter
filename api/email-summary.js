@@ -72,7 +72,10 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
   // Format email subject
   const startDateStr = startDate.toLocaleDateString()
   const endDateStr = endDate.toLocaleDateString()
-  const subject = `Discord Channel Summary (${startDateStr} to ${endDateStr})`
+  const subject = `${metadata.channelName} ${metadata.guildName} Discord Summary ${startDateStr} - ${endDateStr}`
+
+  // Extract channel name and guild name from the first message
+  const { channelName, guildName } = messages[0];
 
   // Send email
   const emailResult = await sendChannelSummaryEmail({
@@ -81,6 +84,8 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
     summary: summary.summary,
     metadata: {
       channelId,
+      channelName, // Add channel name
+      guildName,   // Add guild name
       startDate,
       endDate,
       messageCount: messages.length
@@ -106,7 +111,7 @@ async function sendChannelSummaryEmail ({ to, subject, summary, metadata, format
 Discord Channel Summary
 ======================
 
-Channel ID: ${metadata.channelId}
+Channel: ${metadata.guildName ? `${metadata.guildName} / ` : ''}${metadata.channelName || metadata.channelId}
 Date Range: ${metadata.startDate.toLocaleDateString()} to ${metadata.endDate.toLocaleDateString()}
 Messages Processed: ${metadata.messageCount}
 
@@ -197,7 +202,7 @@ function renderHtmlSummary (markdownContent, metadata) {
     <h1>Discord Channel Summary</h1>
   </header>
   <div class="metadata">
-    <p><strong>Channel ID:</strong> ${metadata.channelId}</p>
+    <p><strong>Channel:</strong> ${metadata.guildName ? `${metadata.guildName} / ` : ''}${metadata.channelName || metadata.channelId}</p>
     <p><strong>Date Range:</strong> ${new Date(metadata.startDate).toLocaleDateString()} to ${new Date(metadata.endDate).toLocaleDateString()}</p>
     <p><strong>Messages Processed:</strong> ${metadata.messageCount}</p>
   </div>
