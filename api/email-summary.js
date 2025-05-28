@@ -69,10 +69,13 @@ router.post('/channel/:channelId', autoCatch(async (req, res) => {
 
   const summary = await openai.summarizeMessages(formattedMessages, options)
 
+  const guildName = messages[0]?.guildName || 'Unknown Guild'
+  const channelName = messages[0]?.channelName || 'Unknown Channel'
+
   // Format email subject
   const startDateStr = startDate.toLocaleDateString()
   const endDateStr = endDate.toLocaleDateString()
-  const subject = `Discord Channel Summary (${startDateStr} to ${endDateStr})`
+  const subject = `${guildName} #${channelName} Discord Newsletter [${startDateStr} - ${endDateStr}]`
 
   // Send email
   const emailResult = await sendChannelSummaryEmail({
