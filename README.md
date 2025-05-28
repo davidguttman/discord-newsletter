@@ -9,6 +9,7 @@ Fetches messages from Discord channels, summarizes them using AI, and emails the
 - **Discord Integration**: Connects to Discord API to fetch messages
 - **OpenAI Integration**: Uses OpenAI API for message summarization
 - **Mailgun Integration**: Sends email summaries via Mailgun API
+- **Newsletter**: Weekly digest of Discord messages with human-readable channel names
 - **Authentication**: Built-in auth middleware with test environment support
 - **Testing**: Comprehensive test setup with tape and supertest
 - **Error Handling**: Automatic error catching and formatting
@@ -41,8 +42,11 @@ AUTHENTIC_SERVER=your-authentic-server # Optional for authentication
 WHITELIST=email1@example.com,email2@example.com # Optional for authentication
 
 # Discord Configuration
-DISCORD_BOT_TOKEN=your_discord_bot_token
-DISCORD_CHANNEL_ID=your_discord_channel_id
+DISCORD_TOKEN=your_discord_token_here
+GUILD_CHANNELS=guildId1:channelId1,guildId2:channelId2
+DISCORD_GUILD_ID=your_guild_id
+DISCORD_CHANNEL_IDS=channelId1,channelId2,channelId3
+NEWSLETTER_RECIPIENTS=user1@example.com,user2@example.com
 
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
@@ -118,6 +122,15 @@ npm start
 - `POST /email-summary` - Send the generated summary via email using Mailgun
 
 *(Authentication might be required for some endpoints depending on the setup)*
+
+## Scripts 📜
+
+- `npm run dev` - Start the development server with auto-restart
+- `npm start` - Start the production server
+- `npm test` - Run the test suite
+- `node scripts/send-newsletter.js` - Send a weekly newsletter with Discord messages
+- `node scripts/send-daily-summary.js` - Send a daily summary of Discord messages
+- `node scripts/archive-messages.js` - Archive messages from Discord to the database
 
 ## Code Style 📝
 
