@@ -88,6 +88,7 @@ test('POST /email-summary/channel/:channelId - sends email summary', async t => 
       channelId: 'channel-email',
       channelName: 'email-channel',
       guildId: 'guild1',
+      guildName: 'Test Guild',
       createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
       updatedAt: new Date(Date.now() - 1000 * 60 * 60),
       attachments: [],
@@ -101,6 +102,7 @@ test('POST /email-summary/channel/:channelId - sends email summary', async t => 
       channelId: 'channel-email',
       channelName: 'email-channel',
       guildId: 'guild1',
+      guildName: 'Test Guild',
       createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
       updatedAt: new Date(Date.now() - 1000 * 60 * 30),
       attachments: [],
@@ -128,7 +130,7 @@ test('POST /email-summary/channel/:channelId - sends email summary', async t => 
 
   t.ok(emailSent, 'Email was sent')
   t.equal(lastEmailOptions.to, 'test@example.com', 'Email sent to correct recipient')
-  t.ok(lastEmailOptions.subject.includes('Discord Channel Summary'), 'Email has correct subject')
+  t.ok(lastEmailOptions.subject.includes('Discord Newsletter'), 'Email has correct subject format')
   t.ok(lastEmailOptions.html, 'HTML content was included')
   t.ok(lastEmailOptions.text, 'Text content was included')
 
