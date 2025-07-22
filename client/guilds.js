@@ -32,7 +32,7 @@ module.exports = function guilds (params) {
   // Load guilds from API and get current settings
   Promise.all([
     fetch('/guilds').then(r => r.ok ? r.json() : []),
-    fetch('/settings').then(r => r.ok ? r.json() : null)
+    fetch('/settings').then(r => r.ok ? r.json() : [])
   ])
     .then(([guilds, settings]) => {
       const loading = page.querySelector('#loading')
@@ -46,26 +46,34 @@ module.exports = function guilds (params) {
         return
       }
       
-      // Sort guilds - active one first
-      const activeGuildId = settings?.guildId
+      // Get set of guild IDs that have active channels
+      const activeGuildIds = new Set(settings.map(s => s.guildId))
+      
+      // Sort guilds - active ones first, then alphabetically
       const sortedGuilds = guilds.sort((a, b) => {
-        if (a.id === activeGuildId && b.id !== activeGuildId) return -1
-        if (b.id === activeGuildId && a.id !== activeGuildId) return 1
+        const aActive = activeGuildIds.has(a.id)
+        const bActive = activeGuildIds.has(b.id)
+        if (aActive && !bActive) return -1
+        if (bActive && !aActive) return 1
         return a.name.localeCompare(b.name)
       })
       
       guildsList.innerHTML = sortedGuilds.map(guild => {
-        const isActive = guild.id === activeGuildId
-        const activeIndicator = isActive ? '<span class="f7 bg-green white ph2 pv1 br2 ml2">COLLECTING</span>' : ''
+        const isActive = activeGuildIds.has(guild.id)
+        const channelCount = settings.filter(s => s.guildId === guild.id).length
+        const activeIndicator = isActive ? `<span class="f7 bg-green white ph2 pv1 br2">${channelCount} CHANNEL${channelCount > 1 ? 'S' : ''}</span>` : ''
         
         return `
           <div class="bb b--dark-gray ${isActive ? 'bg-dark-green' : ''}">
             <a href="#/guilds/${guild.id}/channels" class="link white-80 hover-white dim flex items-center pa3">
               <div class="flex-auto">
-                <h3 class="ma0 f5 fw6">${guild.name} ${activeIndicator}</h3>
+                <h3 class="ma0 f5 fw6">${guild.name}</h3>
                 <p class="ma0 mt1 f6 white-60">${guild.memberCount} members</p>
               </div>
-              <div class="white-40 f6">→</div>
+              <div class="flex items-center">
+                ${activeIndicator}
+                <div class="white-40 f6 ml2">→</div>
+              </div>
             </a>
           </div>
         `
