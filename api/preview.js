@@ -38,7 +38,6 @@ router.get('/:guildId/:channelId', autoCatch(async (req, res) => {
   }
 
   try {
-    console.log(`Fetching ${limit} messages from Discord`)
     const messages = await channel.messages.fetch({ limit })
     
     const previewMessages = Array.from(messages.values())
@@ -63,7 +62,6 @@ router.get('/:guildId/:channelId', autoCatch(async (req, res) => {
         }))
       }))
 
-    console.log(`Found ${previewMessages.length} preview messages`)
     res.json({
       messages: previewMessages,
       isPreview: true,
@@ -71,8 +69,16 @@ router.get('/:guildId/:channelId', autoCatch(async (req, res) => {
       channelName: channel.name
     })
   } catch (error) {
-    console.error('Error fetching preview messages:', error)
-    res.status(500).json({ error: 'Failed to fetch preview messages' })
+    console.error('Error fetching preview messages from Discord:', error.message, error.code)
+    if (error.code === 50001) {
+      res.status(403).json({ error: 'Bot lacks permissions to read messages in this channel' })
+    } else if (error.code === 10003) {
+      res.status(404).json({ error: 'Channel not found' })
+    } else if (error.code === 50013) {
+      res.status(403).json({ error: 'Missing access to channel' })
+    } else {
+      res.status(500).json({ error: 'Failed to fetch preview messages' })
+    }
   }
 }))
 

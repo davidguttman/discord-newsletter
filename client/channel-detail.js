@@ -233,8 +233,10 @@ function loadPreviewMessages (guildId, channelId, page) {
       // Show error message
       if (err.message.includes('503')) {
         alert('Discord client not ready. Please try again in a moment.')
+      } else if (err.message.includes('403')) {
+        alert('Bot lacks permissions to read messages in this channel.')
       } else if (err.message.includes('404')) {
-        alert('Channel not found or bot doesn\'t have access.')
+        alert('Channel not found.')
       } else {
         alert('Failed to load preview messages. Please try again.')
       }

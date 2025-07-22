@@ -51,7 +51,19 @@ router.get('/:guildId/channels', autoCatch(async (req, res) => {
   }
 
   const channels = Array.from(guild.channels.cache.values())
-    .filter(channel => channel.type === 'GUILD_TEXT' || channel.type === 0)
+    .filter(channel => {
+      // Only text channels
+      if (channel.type !== 'GUILD_TEXT' && channel.type !== 0) return false
+      
+      // Check if bot has both VIEW_CHANNEL and READ_MESSAGE_HISTORY permissions
+      const botMember = guild.members.cache.get(discordClient.user.id)
+      if (!botMember) return false
+      
+      const permissions = channel.permissionsFor(botMember)
+      return permissions && 
+             permissions.has('VIEW_CHANNEL') && 
+             permissions.has('READ_MESSAGE_HISTORY')
+    })
     .map(channel => ({
       id: channel.id,
       name: channel.name,
