@@ -68,7 +68,6 @@ module.exports = function channels (params) {
             <a href="#/guilds/${guildId}/channels/${channel.id}" class="link white-80 hover-white dim flex items-center pa3">
               <div class="flex-auto">
                 <h3 class="ma0 f5 fw6"># ${channel.name} ${activeIndicator}</h3>
-                <p class="ma0 mt1 f6 white-60">Type: ${channel.type}</p>
               </div>
               <div class="white-40 f6">→</div>
             </a>

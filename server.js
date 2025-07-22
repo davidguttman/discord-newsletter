@@ -8,6 +8,7 @@ const summarizeRouter = require('./api/summarize')
 const emailSummaryRouter = require('./api/email-summary')
 const settingsRouter = require('./api/settings')
 const { router: guildsRouter, setDiscordClient } = require('./api/guilds')
+const { router: previewRouter, setDiscordClient: setPreviewDiscordClient } = require('./api/preview')
 const healthpoint = require('healthpoint')
 const budo = require('budo')
 const { createProxyMiddleware } = require('http-proxy-middleware')
@@ -45,6 +46,7 @@ async function setupDevServer () {
               req.path.startsWith('/email-summary') || 
               req.path.startsWith('/settings') ||
               req.path.startsWith('/guilds') ||
+              req.path.startsWith('/preview') ||
               req.path.startsWith('/health')) {
             return next()
           }
@@ -93,12 +95,14 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/email-summary', mockAuth, emailSummaryRouter)
   app.use('/settings', mockAuth, settingsRouter)
   app.use('/guilds', mockAuth, guildsRouter)
+  app.use('/preview', mockAuth, previewRouter)
 } else {
   app.use('/messages', messagesRouter)
   app.use('/summarize', summarizeRouter)
   app.use('/email-summary', emailSummaryRouter)
   app.use('/settings', settingsRouter)
   app.use('/guilds', guildsRouter)
+  app.use('/preview', previewRouter)
 }
 
 // Error handling middleware
@@ -127,8 +131,10 @@ if (require.main === module) {
   setupDevServer().then(() => {
     // Start Discord client (don't exit on failure, allow settings configuration)
     discord.start().then(() => {
-      // Set Discord client reference for guilds API
-      setDiscordClient(discord.getClient())
+      // Set Discord client reference for guilds and preview APIs
+      const client = discord.getClient()
+      setDiscordClient(client)
+      setPreviewDiscordClient(client)
       console.log('Discord client started successfully')
     }).catch(err => {
       console.error('Failed to start Discord client:', err.message)

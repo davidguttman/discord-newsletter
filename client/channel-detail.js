@@ -46,8 +46,11 @@ module.exports = function channelDetail (params) {
           </div>
           
           <div id="no-messages" class="dn tc pa4 bg-dark-gray br2">
-            <p class="white-60 ma0">No messages found for this channel</p>
-            <p class="white-40 ma0 mt2 f6">Subscribe to start collecting messages</p>
+            <p class="white-60 ma0 mb3">No stored messages found for this channel</p>
+            <button id="load-preview" class="f6 link dim br2 ph3 pv2 dib white bg-blue bn pointer">
+              Load Preview
+            </button>
+            <p class="white-40 ma0 mt3 f6">Start collecting to store messages automatically</p>
           </div>
           
           <div id="error" class="dn tc">
@@ -63,6 +66,14 @@ module.exports = function channelDetail (params) {
   toggleBtn.addEventListener('click', () => {
     window.toggleCollection(guildId, channelId)
   })
+  
+  // Add event listener for load preview button
+  const previewBtn = page.querySelector('#load-preview')
+  if (previewBtn) {
+    previewBtn.addEventListener('click', () => {
+      loadPreviewMessages(guildId, channelId, page)
+    })
+  }
   
   // Check current collection status
   checkCollectionStatus(guildId, channelId, page)
@@ -151,6 +162,82 @@ function loadMessages (guildId, channelId, page) {
       
       loading.classList.add('dn')
       error.classList.remove('dn')
+    })
+}
+
+function loadPreviewMessages (guildId, channelId, page) {
+  const previewBtn = page.querySelector('#load-preview')
+  const noMessages = page.querySelector('#no-messages')
+  const messagesList = page.querySelector('#messages-list')
+  
+  if (!previewBtn) {
+    return
+  }
+  
+  // Show loading state
+  previewBtn.textContent = 'Loading...'
+  previewBtn.disabled = true
+  
+  fetch(`/preview/${guildId}/${channelId}?limit=10`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      return response.json()
+    })
+    .then(data => {
+      // Hide no-messages section and show messages list
+      noMessages.classList.add('dn')
+      messagesList.classList.remove('dn')
+      
+      // Add preview header
+      const previewHeader = `
+        <div class="bg-blue pa3 br2 mb3">
+          <h4 class="ma0 f6 fw6 white">Preview Messages</h4>
+          <p class="ma0 mt1 f7 white-80">Recent messages from ${data.channelName} (not stored)</p>
+        </div>
+      `
+      
+      // Render messages with preview styling
+      const messagesHtml = data.messages.map(message => {
+        const date = new Date(message.createdAt).toLocaleString()
+        return `
+          <div class="bb b--dark-gray pv3 o-70">
+            <div class="flex items-start">
+              <div class="flex-auto">
+                <div class="flex items-center mb2">
+                  <span class="f6 fw6 white-80 mr2">${message.authorUsername}</span>
+                  <span class="f7 white-40">${date}</span>
+                </div>
+                <p class="ma0 f6 white-70 lh-copy">${message.content || '<em>No text content</em>'}</p>
+                ${message.attachments && message.attachments.length > 0 ? `
+                  <div class="mt2">
+                    <span class="f7 white-40">${message.attachments.length} attachment(s)</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `
+      }).join('')
+      
+      messagesList.innerHTML = previewHeader + messagesHtml
+    })
+    .catch(err => {
+      console.error('Failed to load preview messages:', err)
+      
+      // Reset button state
+      previewBtn.textContent = 'Load Preview'
+      previewBtn.disabled = false
+      
+      // Show error message
+      if (err.message.includes('503')) {
+        alert('Discord client not ready. Please try again in a moment.')
+      } else if (err.message.includes('404')) {
+        alert('Channel not found or bot doesn\'t have access.')
+      } else {
+        alert('Failed to load preview messages. Please try again.')
+      }
     })
 }
 
