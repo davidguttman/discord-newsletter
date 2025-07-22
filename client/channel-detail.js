@@ -6,8 +6,18 @@ module.exports = function channelDetail (params) {
   const page = html`
     <div class="sans-serif">
       <header class="tc pv4">
-        <h1 class="f2 f1-l fw2 white-80 mv3">Channel Details</h1>
-        <h2 class="f6 fw4 ttu tracked white-40 mv0">Latest messages and subscription</h2>
+        <div id="channel-info-loading">
+          <h1 class="f2 f1-l fw2 white-80 mv3">Loading...</h1>
+        </div>
+        <div id="channel-info" class="dn">
+          <h1 class="f2 f1-l fw2 white-80 mv3">
+            <span id="guild-name">Guild</span>
+          </h1>
+          <h2 class="f4 fw4 white-60 mv2">
+            # <span id="channel-name">Channel</span>
+          </h2>
+          <p class="f6 fw4 ttu tracked white-40 mv0">Latest messages and subscription</p>
+        </div>
         <div class="mt3">
           <a href="#/guilds/${guildId}/channels" class="f6 link dim white-60">← Back to channels</a>
         </div>
@@ -75,6 +85,9 @@ module.exports = function channelDetail (params) {
     })
   }
   
+  // Load guild and channel info
+  loadChannelInfo(guildId, channelId, page)
+  
   // Check current collection status
   checkCollectionStatus(guildId, channelId, page)
   
@@ -84,30 +97,70 @@ module.exports = function channelDetail (params) {
   return page
 }
 
-function checkCollectionStatus (guildId, channelId, page) {
-  fetch('/settings')
-    .then(response => {
-      if (response.ok) {
-        return response.json()
+function loadChannelInfo (guildId, channelId, page) {
+  // Load guild and channel names
+  Promise.all([
+    fetch('/guilds').then(r => r.ok ? r.json() : []),
+    fetch(`/guilds/${guildId}/channels`).then(r => r.ok ? r.json() : [])
+  ])
+    .then(([guilds, channels]) => {
+      const guild = guilds.find(g => g.id === guildId)
+      const channel = channels.find(c => c.id === channelId)
+      
+      const loading = page.querySelector('#channel-info-loading')
+      const info = page.querySelector('#channel-info')
+      const guildNameEl = page.querySelector('#guild-name')
+      const channelNameEl = page.querySelector('#channel-name')
+      
+      loading.classList.add('dn')
+      info.classList.remove('dn')
+      
+      if (guild) {
+        guildNameEl.textContent = guild.name
       }
-      return null
+      
+      if (channel) {
+        channelNameEl.textContent = channel.name
+      }
     })
-    .then(settings => {
+    .catch(err => {
+      console.error('Failed to load channel info:', err)
+      const loading = page.querySelector('#channel-info-loading')
+      const info = page.querySelector('#channel-info')
+      
+      loading.classList.add('dn')
+      info.classList.remove('dn')
+      
+      // Show fallback text
+      const guildNameEl = page.querySelector('#guild-name')
+      const channelNameEl = page.querySelector('#channel-name')
+      guildNameEl.textContent = 'Unknown Guild'
+      channelNameEl.textContent = 'Unknown Channel'
+    })
+}
+
+function checkCollectionStatus (guildId, channelId, page) {
+  fetch(`/settings/${guildId}/${channelId}`)
+    .then(response => {
       const toggleBtn = page.querySelector('#collection-toggle')
       const toggleText = page.querySelector('#collection-toggle-text')
       
-      const isCollecting = settings && settings.guildId === guildId && settings.channelId === channelId
-      
-      if (isCollecting) {
+      if (response.ok) {
+        // Channel is being collected
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-red white'
         toggleText.textContent = 'Stop Collecting'
       } else {
+        // Channel is not being collected
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-green white'
         toggleText.textContent = 'Start Collecting'
       }
     })
     .catch(() => {
-      // Ignore errors
+      // Default to not collecting on error
+      const toggleBtn = page.querySelector('#collection-toggle')
+      const toggleText = page.querySelector('#collection-toggle-text')
+      toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-green white'
+      toggleText.textContent = 'Start Collecting'
     })
 }
 
@@ -247,22 +300,17 @@ function loadPreviewMessages (guildId, channelId, page) {
 window.toggleCollection = async function (guildId, channelId) {
   console.log('toggleCollection called with:', guildId, channelId)
   try {
-    // Get current settings
-    const currentResponse = await fetch('/settings')
-    const currentSettings = currentResponse.ok ? await currentResponse.json() : null
-    
-    const isCurrentlyCollecting = currentSettings && 
-                                  currentSettings.guildId === guildId && 
-                                  currentSettings.channelId === channelId
+    // Check if channel is currently being collected
+    const currentResponse = await fetch(`/settings/${guildId}/${channelId}`)
+    const isCurrentlyCollecting = currentResponse.ok
     
     if (isCurrentlyCollecting) {
-      // Stop collecting - delete current settings
-      const response = await fetch(`/settings/${currentSettings._id}`, {
+      // Stop collecting - remove channel from collection
+      const response = await fetch(`/settings/${guildId}/${channelId}`, {
         method: 'DELETE'
       })
       
       if (response.ok) {
-        alert('Stopped collecting messages!')
         // Update button
         const toggleBtn = document.querySelector('#collection-toggle')
         const toggleText = document.querySelector('#collection-toggle-text')
@@ -272,7 +320,7 @@ window.toggleCollection = async function (guildId, channelId) {
         throw new Error('Failed to stop collecting')
       }
     } else {
-      // Start collecting - create new settings
+      // Start collecting - add channel to collection
       const response = await fetch('/settings', {
         method: 'POST',
         headers: {
@@ -285,7 +333,6 @@ window.toggleCollection = async function (guildId, channelId) {
       })
       
       if (response.ok) {
-        alert('Started collecting messages!')
         // Update button
         const toggleBtn = document.querySelector('#collection-toggle')
         const toggleText = document.querySelector('#collection-toggle-text')
@@ -297,6 +344,6 @@ window.toggleCollection = async function (guildId, channelId) {
       }
     }
   } catch (err) {
-    alert(`Error: ${err.message}`)
+    console.error('Collection toggle error:', err)
   }
 }

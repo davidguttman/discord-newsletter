@@ -13,4 +13,7 @@ const settingsSchema = new mongoose.Schema({
   timestamps: true
 })
 
+// Ensure unique guild/channel combinations
+settingsSchema.index({ guildId: 1, channelId: 1 }, { unique: true })
+
 module.exports = mongoose.model('Settings', settingsSchema)

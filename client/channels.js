@@ -37,7 +37,7 @@ module.exports = function channels (params) {
   // Load channels from API and get current settings
   Promise.all([
     fetch(`/guilds/${guildId}/channels`).then(r => r.ok ? r.json() : []),
-    fetch('/settings').then(r => r.ok ? r.json() : null)
+    fetch('/settings').then(r => r.ok ? r.json() : [])
   ])
     .then(([channels, settings]) => {
       const loading = page.querySelector('#loading')
@@ -51,25 +51,36 @@ module.exports = function channels (params) {
         return
       }
       
-      // Sort channels - active one first, then by position
-      const activeChannelId = settings?.guildId === guildId ? settings?.channelId : null
+      // Get set of active channel IDs for this guild
+      const activeChannelIds = new Set(
+        settings
+          .filter(s => s.guildId === guildId)
+          .map(s => s.channelId)
+      )
+      
+      // Sort channels - active ones first, then by position
       const sortedChannels = channels.sort((a, b) => {
-        if (a.id === activeChannelId && b.id !== activeChannelId) return -1
-        if (b.id === activeChannelId && a.id !== activeChannelId) return 1
+        const aActive = activeChannelIds.has(a.id)
+        const bActive = activeChannelIds.has(b.id)
+        if (aActive && !bActive) return -1
+        if (bActive && !aActive) return 1
         return a.position - b.position
       })
       
       channelsList.innerHTML = sortedChannels.map(channel => {
-        const isActive = channel.id === activeChannelId
-        const activeIndicator = isActive ? '<span class="f7 bg-green white ph2 pv1 br2 ml2">COLLECTING</span>' : ''
+        const isActive = activeChannelIds.has(channel.id)
+        const activeIndicator = isActive ? '<span class="f7 bg-green white ph2 pv1 br2">COLLECTING</span>' : ''
         
         return `
           <div class="bb b--dark-gray ${isActive ? 'bg-dark-green' : ''}">
             <a href="#/guilds/${guildId}/channels/${channel.id}" class="link white-80 hover-white dim flex items-center pa3">
               <div class="flex-auto">
-                <h3 class="ma0 f5 fw6"># ${channel.name} ${activeIndicator}</h3>
+                <h3 class="ma0 f5 fw6"># ${channel.name}</h3>
               </div>
-              <div class="white-40 f6">→</div>
+              <div class="flex items-center">
+                ${activeIndicator}
+                <div class="white-40 f6 ml2">→</div>
+              </div>
             </a>
           </div>
         `
