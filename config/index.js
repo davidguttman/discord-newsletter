@@ -5,7 +5,7 @@ const productionize = require('productionize')
 const defaults = {
   port: 3000,
   mongoUri: 'mongodb://localhost:27017/',
-  mongoDbName: 'example',
+  mongoDbName: 'discord-newsletter',
   googleProjectId: '',
   googleApplicationCredentials: '',
   authenticServer: '',
