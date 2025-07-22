@@ -14,19 +14,19 @@ module.exports = function channelDetail (params) {
       </header>
       
       <article class="pa3 pa5-ns mw7 center">
-        <!-- Subscription Toggle -->
+        <!-- Message Collection Toggle -->
         <div class="bg-dark-gray pa3 br2 mb4">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="ma0 f5 fw6 white-80">Message Subscription</h3>
+              <h3 class="ma0 f5 fw6 white-80">Message Collection</h3>
               <p class="ma0 mt1 f6 white-60">Toggle to start/stop storing messages from this channel</p>
             </div>
-            <button id="subscribe-toggle" class="bn br2 ph3 pv2 pointer f6 fw6 bg-green white" 
-                    onclick="toggleSubscription('${guildId}', '${channelId}')">
-              <span id="toggle-text">Subscribe</span>
+            <button id="collection-toggle" class="bn br2 ph3 pv2 pointer f6 fw6 bg-green white">
+              <span id="collection-toggle-text">Start Collecting</span>
             </button>
           </div>
         </div>
+        
         
         <!-- Messages Section -->
         <div class="mb4">
@@ -58,8 +58,14 @@ module.exports = function channelDetail (params) {
     </div>
   `
   
-  // Check current subscription status
-  checkSubscriptionStatus(guildId, channelId, page)
+  // Add event listener for collection toggle
+  const toggleBtn = page.querySelector('#collection-toggle')
+  toggleBtn.addEventListener('click', () => {
+    window.toggleCollection(guildId, channelId)
+  })
+  
+  // Check current collection status
+  checkCollectionStatus(guildId, channelId, page)
   
   // Load recent messages
   loadMessages(guildId, channelId, page)
@@ -67,7 +73,7 @@ module.exports = function channelDetail (params) {
   return page
 }
 
-function checkSubscriptionStatus (guildId, channelId, page) {
+function checkCollectionStatus (guildId, channelId, page) {
   fetch('/settings')
     .then(response => {
       if (response.ok) {
@@ -76,17 +82,17 @@ function checkSubscriptionStatus (guildId, channelId, page) {
       return null
     })
     .then(settings => {
-      const toggleBtn = page.querySelector('#subscribe-toggle')
-      const toggleText = page.querySelector('#toggle-text')
+      const toggleBtn = page.querySelector('#collection-toggle')
+      const toggleText = page.querySelector('#collection-toggle-text')
       
-      const isSubscribed = settings && settings.guildId === guildId && settings.channelId === channelId
+      const isCollecting = settings && settings.guildId === guildId && settings.channelId === channelId
       
-      if (isSubscribed) {
+      if (isCollecting) {
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-red white'
-        toggleText.textContent = 'Unsubscribe'
+        toggleText.textContent = 'Stop Collecting'
       } else {
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-green white'
-        toggleText.textContent = 'Subscribe'
+        toggleText.textContent = 'Start Collecting'
       }
     })
     .catch(() => {
@@ -148,43 +154,36 @@ function loadMessages (guildId, channelId, page) {
     })
 }
 
-// Global function for subscription toggle
-window.toggleSubscription = async function (guildId, channelId) {
+// Global function for collection toggle
+window.toggleCollection = async function (guildId, channelId) {
+  console.log('toggleCollection called with:', guildId, channelId)
   try {
     // Get current settings
     const currentResponse = await fetch('/settings')
     const currentSettings = currentResponse.ok ? await currentResponse.json() : null
     
-    const isCurrentlySubscribed = currentSettings && 
+    const isCurrentlyCollecting = currentSettings && 
                                   currentSettings.guildId === guildId && 
                                   currentSettings.channelId === channelId
     
-    if (isCurrentlySubscribed) {
-      // Unsubscribe - delete current settings
+    if (isCurrentlyCollecting) {
+      // Stop collecting - delete current settings
       const response = await fetch(`/settings/${currentSettings._id}`, {
         method: 'DELETE'
       })
       
       if (response.ok) {
-        alert('Unsubscribed successfully!')
+        alert('Stopped collecting messages!')
         // Update button
-        const toggleBtn = document.querySelector('#subscribe-toggle')
-        const toggleText = document.querySelector('#toggle-text')
+        const toggleBtn = document.querySelector('#collection-toggle')
+        const toggleText = document.querySelector('#collection-toggle-text')
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-green white'
-        toggleText.textContent = 'Subscribe'
+        toggleText.textContent = 'Start Collecting'
       } else {
-        throw new Error('Failed to unsubscribe')
+        throw new Error('Failed to stop collecting')
       }
     } else {
-      // Subscribe - create new settings (need email fields)
-      const emailTo = prompt('Enter email to send summaries to:')
-      const emailFrom = prompt('Enter from email address:')
-      
-      if (!emailTo || !emailFrom) {
-        alert('Email addresses are required')
-        return
-      }
-      
+      // Start collecting - create new settings
       const response = await fetch('/settings', {
         method: 'POST',
         headers: {
@@ -192,19 +191,17 @@ window.toggleSubscription = async function (guildId, channelId) {
         },
         body: JSON.stringify({
           guildId,
-          channelId,
-          emailTo,
-          emailFrom
+          channelId
         })
       })
       
       if (response.ok) {
-        alert('Subscribed successfully!')
+        alert('Started collecting messages!')
         // Update button
-        const toggleBtn = document.querySelector('#subscribe-toggle')
-        const toggleText = document.querySelector('#toggle-text')
+        const toggleBtn = document.querySelector('#collection-toggle')
+        const toggleText = document.querySelector('#collection-toggle-text')
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-red white'
-        toggleText.textContent = 'Unsubscribe'
+        toggleText.textContent = 'Stop Collecting'
       } else {
         const error = await response.json()
         throw new Error(error.error)

@@ -29,15 +29,12 @@ module.exports = function guilds (params) {
     </div>
   `
   
-  // Load guilds from API
-  fetch('/guilds')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
-      }
-      return response.json()
-    })
-    .then(guilds => {
+  // Load guilds from API and get current settings
+  Promise.all([
+    fetch('/guilds').then(r => r.ok ? r.json() : []),
+    fetch('/settings').then(r => r.ok ? r.json() : null)
+  ])
+    .then(([guilds, settings]) => {
       const loading = page.querySelector('#loading')
       const guildsList = page.querySelector('#guilds-list')
       
@@ -49,17 +46,30 @@ module.exports = function guilds (params) {
         return
       }
       
-      guildsList.innerHTML = guilds.map(guild => `
-        <div class="bb b--dark-gray pv3">
-          <a href="#/guilds/${guild.id}/channels" class="link white-80 hover-white dim flex items-center">
-            <div class="flex-auto">
-              <h3 class="ma0 f5 fw6">${guild.name}</h3>
-              <p class="ma0 mt1 f6 white-60">${guild.memberCount} members</p>
-            </div>
-            <div class="white-40 f6">→</div>
-          </a>
-        </div>
-      `).join('')
+      // Sort guilds - active one first
+      const activeGuildId = settings?.guildId
+      const sortedGuilds = guilds.sort((a, b) => {
+        if (a.id === activeGuildId && b.id !== activeGuildId) return -1
+        if (b.id === activeGuildId && a.id !== activeGuildId) return 1
+        return a.name.localeCompare(b.name)
+      })
+      
+      guildsList.innerHTML = sortedGuilds.map(guild => {
+        const isActive = guild.id === activeGuildId
+        const activeIndicator = isActive ? '<span class="f7 bg-green white ph2 pv1 br2 ml2">COLLECTING</span>' : ''
+        
+        return `
+          <div class="bb b--dark-gray ${isActive ? 'bg-dark-green' : ''}">
+            <a href="#/guilds/${guild.id}/channels" class="link white-80 hover-white dim flex items-center pa3">
+              <div class="flex-auto">
+                <h3 class="ma0 f5 fw6">${guild.name} ${activeIndicator}</h3>
+                <p class="ma0 mt1 f6 white-60">${guild.memberCount} members</p>
+              </div>
+              <div class="white-40 f6">→</div>
+            </a>
+          </div>
+        `
+      }).join('')
     })
     .catch(err => {
       console.error('Failed to load guilds:', err)

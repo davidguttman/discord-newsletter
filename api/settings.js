@@ -16,19 +16,17 @@ router.get('/', autoCatch(async (req, res) => {
 
 // POST /settings - Create or update settings
 router.post('/', autoCatch(async (req, res) => {
-  const { guildId, channelId, emailTo, emailFrom } = req.body
+  const { guildId, channelId } = req.body
   
-  if (!guildId || !channelId || !emailTo || !emailFrom) {
+  if (!guildId || !channelId) {
     return res.status(400).json({ 
-      error: 'All fields required: guildId, channelId, emailTo, emailFrom' 
+      error: 'Both guildId and channelId are required' 
     })
   }
   
   const settings = new Settings({
     guildId,
-    channelId,
-    emailTo,
-    emailFrom
+    channelId
   })
   
   await settings.save()
@@ -37,11 +35,11 @@ router.post('/', autoCatch(async (req, res) => {
 
 // PUT /settings/:id - Update existing settings
 router.put('/:id', autoCatch(async (req, res) => {
-  const { guildId, channelId, emailTo, emailFrom } = req.body
+  const { guildId, channelId } = req.body
   
   const settings = await Settings.findByIdAndUpdate(
     req.params.id,
-    { guildId, channelId, emailTo, emailFrom },
+    { guildId, channelId },
     { new: true, runValidators: true }
   )
   

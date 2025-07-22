@@ -8,14 +8,6 @@ const settingsSchema = new mongoose.Schema({
   channelId: {
     type: String,
     required: true
-  },
-  emailTo: {
-    type: String,
-    required: true
-  },
-  emailFrom: {
-    type: String,
-    required: true
   }
 }, {
   timestamps: true

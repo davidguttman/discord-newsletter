@@ -14,11 +14,8 @@ module.exports = function welcome (params) {
           Set up guilds, channels, and email preferences to get started.
         </p>
         <div class="tc mt4">
-          <a href="#/guilds" class="f6 link dim br2 ph3 pv2 mb2 dib mr3 white bg-dark-blue">
+          <a href="#/guilds" class="f6 link dim br2 ph3 pv2 mb2 dib white bg-dark-blue">
             Browse Guilds & Channels
-          </a>
-          <a href="#/settings" class="f6 link dim br2 ph3 pv2 mb2 dib white bg-dark-green">
-            Configure Settings
           </a>
         </div>
       </article>

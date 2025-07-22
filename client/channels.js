@@ -34,15 +34,12 @@ module.exports = function channels (params) {
     </div>
   `
   
-  // Load channels from API
-  fetch(`/guilds/${guildId}/channels`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
-      }
-      return response.json()
-    })
-    .then(channels => {
+  // Load channels from API and get current settings
+  Promise.all([
+    fetch(`/guilds/${guildId}/channels`).then(r => r.ok ? r.json() : []),
+    fetch('/settings').then(r => r.ok ? r.json() : null)
+  ])
+    .then(([channels, settings]) => {
       const loading = page.querySelector('#loading')
       const channelsList = page.querySelector('#channels-list')
       
@@ -54,17 +51,30 @@ module.exports = function channels (params) {
         return
       }
       
-      channelsList.innerHTML = channels.map(channel => `
-        <div class="bb b--dark-gray pv3">
-          <a href="#/guilds/${guildId}/channels/${channel.id}" class="link white-80 hover-white dim flex items-center">
-            <div class="flex-auto">
-              <h3 class="ma0 f5 fw6"># ${channel.name}</h3>
-              <p class="ma0 mt1 f6 white-60">Type: ${channel.type}</p>
-            </div>
-            <div class="white-40 f6">→</div>
-          </a>
-        </div>
-      `).join('')
+      // Sort channels - active one first, then by position
+      const activeChannelId = settings?.guildId === guildId ? settings?.channelId : null
+      const sortedChannels = channels.sort((a, b) => {
+        if (a.id === activeChannelId && b.id !== activeChannelId) return -1
+        if (b.id === activeChannelId && a.id !== activeChannelId) return 1
+        return a.position - b.position
+      })
+      
+      channelsList.innerHTML = sortedChannels.map(channel => {
+        const isActive = channel.id === activeChannelId
+        const activeIndicator = isActive ? '<span class="f7 bg-green white ph2 pv1 br2 ml2">COLLECTING</span>' : ''
+        
+        return `
+          <div class="bb b--dark-gray ${isActive ? 'bg-dark-green' : ''}">
+            <a href="#/guilds/${guildId}/channels/${channel.id}" class="link white-80 hover-white dim flex items-center pa3">
+              <div class="flex-auto">
+                <h3 class="ma0 f5 fw6"># ${channel.name} ${activeIndicator}</h3>
+                <p class="ma0 mt1 f6 white-60">Type: ${channel.type}</p>
+              </div>
+              <div class="white-40 f6">→</div>
+            </a>
+          </div>
+        `
+      }).join('')
     })
     .catch(err => {
       console.error('Failed to load channels:', err)

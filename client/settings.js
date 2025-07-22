@@ -4,31 +4,15 @@ module.exports = function settings (params) {
   const form = html`
     <div class="sans-serif">
       <header class="tc pv4">
-        <h1 class="f2 f1-l fw2 white-80 mv3">Discord Newsletter Settings</h1>
-        <h2 class="f6 fw4 ttu tracked white-40 mv0">Configure guilds, channels, and email preferences</h2>
+        <h1 class="f2 f1-l fw2 white-80 mv3">Email Settings</h1>
+        <h2 class="f6 fw4 ttu tracked white-40 mv0">Configure email preferences for summaries</h2>
+        <div class="mt3">
+          <a href="#/guilds" class="f6 link dim white-60">← Browse guilds to select channels</a>
+        </div>
       </header>
       
       <article class="pa3 pa5-ns mw7 center">
         <form class="measure center">
-          
-          <!-- Discord Configuration -->
-          <fieldset class="ba b--transparent ph0 mh0">
-            <legend class="f5 fw6 ph0 mh0 white-80">Discord Configuration</legend>
-            
-            <div class="mt3">
-              <label class="db fw6 lh-copy f6 white-80" for="guild-id">Guild ID</label>
-              <input class="pa2 input-reset ba bg-transparent hover-bg-black w-100 white-80" 
-                     type="text" name="guild-id" id="guild-id" 
-                     placeholder="Enter Discord Guild ID">
-            </div>
-            
-            <div class="mt3">
-              <label class="db fw6 lh-copy f6 white-80" for="channel-id">Channel ID</label>
-              <input class="pa2 input-reset ba bg-transparent hover-bg-black w-100 white-80" 
-                     type="text" name="channel-id" id="channel-id" 
-                     placeholder="Enter Discord Channel ID">
-            </div>
-          </fieldset>
           
           <!-- Email Configuration -->
           <fieldset class="ba b--transparent ph0 mh0 mt4">
@@ -66,24 +50,39 @@ module.exports = function settings (params) {
     e.preventDefault()
     
     const formData = new FormData(e.target)
-    const settings = {
-      guildId: formData.get('guild-id'),
-      channelId: formData.get('channel-id'),
-      emailTo: formData.get('email-to'),
-      emailFrom: formData.get('email-from')
+    const emailTo = formData.get('email-to')
+    const emailFrom = formData.get('email-from')
+    
+    if (!emailTo || !emailFrom) {
+      alert('Please fill in both email addresses')
+      return
     }
     
     try {
-      const response = await fetch('/settings', {
-        method: 'POST',
+      // Get current settings to update email fields only
+      const currentResponse = await fetch('/settings')
+      const currentSettings = currentResponse.ok ? await currentResponse.json() : null
+      
+      if (!currentSettings) {
+        alert('No channel is currently being collected. Please select a channel first by browsing guilds.')
+        return
+      }
+      
+      const response = await fetch(`/settings/${currentSettings._id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(settings)
+        body: JSON.stringify({
+          guildId: currentSettings.guildId,
+          channelId: currentSettings.channelId,
+          emailTo,
+          emailFrom
+        })
       })
       
       if (response.ok) {
-        alert('Settings saved successfully!')
+        alert('Email settings saved successfully!')
         window.location.hash = '/'
       } else {
         const error = await response.json()
@@ -104,10 +103,8 @@ module.exports = function settings (params) {
     })
     .then(settings => {
       if (settings) {
-        form.querySelector('#guild-id').value = settings.guildId || ''
-        form.querySelector('#channel-id').value = settings.channelId || ''
-        form.querySelector('#email-to').value = settings.emailTo || ''
-        form.querySelector('#email-from').value = settings.emailFrom || ''
+        form.querySelector('#email-to').value = settings.emailTo === 'placeholder@example.com' ? '' : (settings.emailTo || '')
+        form.querySelector('#email-from').value = settings.emailFrom === 'placeholder@example.com' ? '' : (settings.emailFrom || '')
       }
     })
     .catch(() => {

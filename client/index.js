@@ -2,7 +2,6 @@ require('./style')
 const hash = require('http-hash')()
 
 const welcome = require('./welcome')
-const settings = require('./settings')
 const guilds = require('./guilds')
 const channels = require('./channels')
 const channelDetail = require('./channel-detail')
@@ -11,7 +10,6 @@ document.title = 'Discord Newsletter'
 
 hash.set('/', welcome)
 hash.set('/welcome/:name', welcome)
-hash.set('/settings', settings)
 hash.set('/guilds', guilds)
 hash.set('/guilds/:guildId/channels', channels)
 hash.set('/guilds/:guildId/channels/:channelId', channelDetail)
