@@ -14,6 +14,8 @@ const defaults = {
   openaiApiKey: '',
   openaiModel: 'gpt-4o-mini',
   openaiMaxTokens: 10000,
+  // OpenRouter configuration
+  openrouterApiKey: '',
   // Mailgun configuration
   mailgunApiKey: '',
   mailgunDomain: '',
@@ -34,6 +36,8 @@ const config = {
   openaiApiKey: process.env.OPENAI_API_KEY || defaults.openaiApiKey,
   openaiModel: process.env.OPENAI_MODEL || defaults.openaiModel,
   openaiMaxTokens: process.env.OPENAI_MAX_TOKENS ? parseInt(process.env.OPENAI_MAX_TOKENS) : defaults.openaiMaxTokens,
+  // OpenRouter configuration
+  openrouterApiKey: process.env.OPENROUTER_API_KEY || defaults.openrouterApiKey,
   // Mailgun configuration
   mailgunApiKey: process.env.MAILGUN_API_KEY || defaults.mailgunApiKey,
   mailgunDomain: process.env.MAILGUN_DOMAIN || defaults.mailgunDomain,
