@@ -1,0 +1,9 @@
+{
+  "step": 1,
+  "timestamp": "2025-07-23T20:09:33.465Z",
+  "message_count": 50,
+  "output_files": {
+    "raw_messages": "step1-input-messages.json",
+    "message_map": "step1-output-message-map.txt"
+  }
+}

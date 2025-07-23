@@ -5,7 +5,7 @@ const path = require('path')
 const Message = require('./models/message')
 const { formatMessagesAsText } = require('./lib/message-formatter')
 const openai = require('./lib/openai')
-const { TOPIC_EXTRACTION_PROMPT } = require('./lib/openai/newspaper-prompts')
+const { MESSAGE_GROUPING_PROMPT } = require('./lib/openai/newspaper-prompts')
 const OpenAI = require('openai')
 const config = require('./config')
 
@@ -106,9 +106,9 @@ async function step1_loadMessages(runDir) {
   return { messageMap, messages }
 }
 
-// Step 2: Extract topics from message map
-async function step2_extractTopics(runDir) {
-  console.log('\n📝 STEP 2: Extracting Topics')
+// Step 2: Group messages into topics
+async function step2_groupMessagesByTopic(runDir) {
+  console.log('\n📝 STEP 2: Grouping Messages by Topic')
   console.log('='.repeat(60))
   
   // Load message map from step 1
@@ -121,15 +121,15 @@ async function step2_extractTopics(runDir) {
   console.log(`📥 Loaded message map (${messageMap.split('\n').length} lines)`)
   
   // Create prompt with message map
-  const prompt = TOPIC_EXTRACTION_PROMPT.replace('{messages}', messageMap)
+  const prompt = MESSAGE_GROUPING_PROMPT.replace('{messages}', messageMap)
   
   // Save the prompt template used
   const promptFile = path.join(runDir, 'step2-prompt-template.txt')
   fs.writeFileSync(promptFile, prompt)
   console.log(`💾 Saved prompt template to ${promptFile}`)
   
-  // Call OpenRouter for topic extraction
-  console.log('🤖 Extracting topics with LLM...')
+  // Call OpenRouter for message grouping
+  console.log('🤖 Grouping messages by topic with LLM...')
   const openrouterClient = new OpenAI({
     apiKey: config.openrouterApiKey,
     baseURL: 'https://openrouter.ai/api/v1'
@@ -143,28 +143,36 @@ async function step2_extractTopics(runDir) {
     temperature: 0.1
   })
   
-  const topicsText = response.choices[0].message.content
+  const responseText = response.choices[0].message.content
   
   // Parse JSON from response (handle markdown code blocks if present)
-  let topics
+  let messageGroups
   try {
-    const jsonMatch = topicsText.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/)
-    const jsonText = jsonMatch ? jsonMatch[1] : topicsText
-    topics = JSON.parse(jsonText)
+    const jsonMatch = responseText.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/)
+    const jsonText = jsonMatch ? jsonMatch[1] : responseText
+    messageGroups = JSON.parse(jsonText)
   } catch (error) {
-    console.error('Failed to parse JSON response:', topicsText)
+    console.error('Failed to parse JSON response:', responseText)
     throw new Error('Invalid JSON response from LLM')
   }
   
-  // Save extracted topics
-  const topicsFile = path.join(runDir, 'step2-output-topics.json')
-  fs.writeFileSync(topicsFile, JSON.stringify(topics, null, 2))
-  console.log(`💾 Saved topics to ${topicsFile}`)
-  console.log(`🎯 Found ${topics.topics.length} topics`)
+  // Save message groups
+  const groupsFile = path.join(runDir, 'step2-output-message-groups.json')
+  fs.writeFileSync(groupsFile, JSON.stringify(messageGroups, null, 2))
+  console.log(`💾 Saved message groups to ${groupsFile}`)
+  
+  const topicCount = Object.keys(messageGroups.topic_groups).length
+  const totalMessages = Object.values(messageGroups.topic_groups).reduce((sum, msgs) => sum + msgs.length, 0)
+  console.log(`🎯 Created ${topicCount} topics with ${totalMessages} messages`)
+  
+  // Show topic summary
+  Object.entries(messageGroups.topic_groups).forEach(([topic, messages]) => {
+    console.log(`  📌 ${topic}: ${messages.length} messages`)
+  })
   
   // Save raw LLM response
   const rawResponseFile = path.join(runDir, 'step2-raw-response.txt')
-  fs.writeFileSync(rawResponseFile, topicsText)
+  fs.writeFileSync(rawResponseFile, responseText)
   console.log(`💾 Saved raw response to ${rawResponseFile}`)
   
   // Save metadata
@@ -172,10 +180,11 @@ async function step2_extractTopics(runDir) {
     step: 2,
     timestamp: new Date().toISOString(),
     model: 'google/gemini-2.5-flash-lite',
-    topics_count: topics.topics.length,
+    topic_count: topicCount,
+    total_messages: totalMessages,
     usage: response.usage,
     output_files: {
-      topics: 'step2-output-topics.json',
+      message_groups: 'step2-output-message-groups.json',
       raw_response: 'step2-raw-response.txt',
       prompt_template: 'step2-prompt-template.txt'
     }
@@ -185,7 +194,7 @@ async function step2_extractTopics(runDir) {
   fs.writeFileSync(metadataFile, JSON.stringify(metadata, null, 2))
   
   console.log('✅ Step 2 complete')
-  return topics
+  return messageGroups
 }
 
 // Main workflow runner
@@ -212,7 +221,7 @@ async function runWorkflow() {
     }
     
     if (options.step === '2' || options.step === 'all') {
-      await step2_extractTopics(runDir)
+      await step2_groupMessagesByTopic(runDir)
     }
     
     console.log('\n🎉 WORKFLOW COMPLETE!')
@@ -228,4 +237,4 @@ if (require.main === module) {
   runWorkflow().catch(console.error)
 }
 
-module.exports = { step1_loadMessages, step2_extractTopics }
+module.exports = { step1_loadMessages, step2_groupMessagesByTopic }
