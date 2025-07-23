@@ -1,0 +1,30 @@
+[
+  {
+    "type": "wrong_attribution",
+    "description": "The report provides a hyperlink to \"https://moonshot.com\" as Moonshot’s Anthropic-compatible endpoint, but the input messages never included this URL; the actual endpoint URL was not provided in the conversation.",
+    "severity": "medium",
+    "input_evidence": "Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint (no link supplied)",
+    "output_evidence": "check out insights ... on [Moonshot's Anthropic-compatible endpoint](https://moonshot.com)"
+  },
+  {
+    "type": "wrong_attribution",
+    "description": "The report links to \"https://example.com\" for Lite LLM, which is not mentioned or referenced in the input messages and is therefore an incorrect placeholder.",
+    "severity": "medium",
+    "input_evidence": "Lite LLM has it (no link supplied)",
+    "output_evidence": "Explore this topic further at [Lite LLM](https://example.com)"
+  },
+  {
+    "type": "missing_link",
+    "description": "In the Resources list, the maybe-finance GitHub repository link is empty, despite the input containing the correct GitHub URL.",
+    "severity": "low",
+    "input_evidence": "https://github.com/maybe-finance/maybe",
+    "output_evidence": "[maybe-finance GitHub repository]()"
+  },
+  {
+    "type": "misrepresentation",
+    "description": "The article states that the community was \"taken aback\" or \"stunned\" by the cancellation of slono’s talk, but no such emotional reaction appears in the input messages.",
+    "severity": "low",
+    "input_evidence": "<@1362840252938719353> cancel my talk on august 1 / good bot, very nice bot",
+    "output_evidence": "cancellation ... stuns community"
+  }
+]
