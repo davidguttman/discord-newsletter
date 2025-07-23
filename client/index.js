@@ -1,5 +1,9 @@
 require('./style')
 const hash = require('http-hash')()
+const ApiClient = require('../lib/api-client')
+
+// Make ApiClient globally available in browser
+window.ApiClient = ApiClient
 
 const welcome = require('./welcome')
 const guilds = require('./guilds')

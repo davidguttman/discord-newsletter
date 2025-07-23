@@ -4,8 +4,143 @@ const Message = require('../models/message')
 const messageFormatter = require('../lib/message-formatter')
 const openai = require('../lib/openai')
 const marked = require('marked')
+const ms = require('ms')
 
 const router = express.Router()
+
+// In-memory cache for summaries (key: guildId:channelId:since, value: summary data)
+const summaryCache = new Map()
+
+// Helper function to generate cache key
+function getCacheKey(guildId, channelId, since) {
+  // Round to the nearest hour to allow some cache reuse
+  const now = new Date()
+  const hour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours())
+  return `${guildId}:${channelId}:${since}:${hour.getTime()}`
+}
+
+// GET /summarize - Check for existing summary or return message count for a time period
+router.get('/', autoCatch(async (req, res) => {
+  const { guildId, channelId, since = '24h' } = req.query
+
+  if (!guildId || !channelId) {
+    return res.status(400).json({ error: 'guildId and channelId are required' })
+  }
+
+  // Parse time period
+  let duration
+  try {
+    duration = ms(since)
+    if (!duration) {
+      return res.status(400).json({ error: 'Invalid time period format. Use values like "24h", "1d", "7d", etc.' })
+    }
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid time period format. Use values like "24h", "1d", "7d", etc.' })
+  }
+
+  const endDate = new Date()
+  const startDate = new Date(endDate.getTime() - duration)
+
+  // Build query for messages
+  const query = {
+    guildId,
+    channelId,
+    createdAt: {
+      $gte: startDate,
+      $lte: endDate
+    }
+  }
+
+  // Get message count
+  const messageCount = await Message.countDocuments(query)
+
+  // Check for cached summary
+  const cacheKey = getCacheKey(guildId, channelId, since)
+  const cachedSummary = summaryCache.get(cacheKey)
+
+  res.json({
+    guildId,
+    channelId,
+    since,
+    startDate,
+    endDate,
+    messageCount,
+    summary: cachedSummary?.summary || null,
+    createdAt: cachedSummary?.createdAt || null,
+    usage: cachedSummary?.usage || null
+  })
+}))
+
+// POST /summarize - Generate a new summary
+router.post('/', autoCatch(async (req, res) => {
+  const { guildId, channelId, since = '24h', model, maxTokens } = req.body
+
+  if (!guildId || !channelId) {
+    return res.status(400).json({ error: 'guildId and channelId are required' })
+  }
+
+  // Parse time period
+  let duration
+  try {
+    duration = ms(since)
+    if (!duration) {
+      return res.status(400).json({ error: 'Invalid time period format. Use values like "24h", "1d", "7d", etc.' })
+    }
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid time period format. Use values like "24h", "1d", "7d", etc.' })
+  }
+
+  const endDate = new Date()
+  const startDate = new Date(endDate.getTime() - duration)
+
+  // Build query for messages
+  const query = {
+    guildId,
+    channelId,
+    createdAt: {
+      $gte: startDate,
+      $lte: endDate
+    }
+  }
+
+  // Get messages
+  const messages = await Message.find(query).sort({ createdAt: 1 })
+
+  if (messages.length === 0) {
+    return res.status(404).json({
+      error: 'No messages found for the specified channel and time range'
+    })
+  }
+
+  // Format messages into readable conversation
+  const formattedMessages = messageFormatter.formatMessages(messages, { format: 'txt' })
+
+  // Generate summary using OpenAI
+  const options = {}
+  if (model) options.model = model
+  if (maxTokens) options.maxTokens = parseInt(maxTokens)
+
+  const summary = await openai.summarizeMessages(formattedMessages, options)
+
+  // Cache the summary
+  const cacheKey = getCacheKey(guildId, channelId, since)
+  const summaryData = {
+    guildId,
+    channelId,
+    since,
+    startDate,
+    endDate,
+    messageCount: messages.length,
+    summary: summary.summary,
+    usage: summary.usage,
+    createdAt: new Date()
+  }
+  
+  summaryCache.set(cacheKey, summaryData)
+  console.log(`Cached summary for ${cacheKey}`)
+
+  res.json(summaryData)
+}))
 
 // Summarize messages by channel and time range
 router.get('/channel/:channelId', autoCatch(async (req, res) => {

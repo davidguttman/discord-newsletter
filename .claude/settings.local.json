@@ -12,7 +12,9 @@
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_close",
       "Bash(curl:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run seed:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }

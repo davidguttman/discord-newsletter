@@ -1,0 +1,1 @@
+- https://discnews.jump.sh is local server

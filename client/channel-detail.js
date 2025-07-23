@@ -37,6 +37,33 @@ module.exports = function channelDetail (params) {
           </div>
         </div>
         
+        <!-- Daily Summary Section -->
+        <div class="mb4">
+          <div class="flex items-center justify-between mb3">
+            <h3 class="f4 fw6 white-80 ma0">Daily Summary</h3>
+            <button id="generate-summary" class="f6 link dim br2 ph3 pv2 dib white bg-blue bn pointer">
+              Generate Summary
+            </button>
+          </div>
+          
+          <div id="summary-loading" class="dn tc pa3">
+            <div class="ball-scale-ripple-multiple">
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <p class="white-60 mt3">Generating summary...</p>
+          </div>
+          
+          <div id="summary-content" class="dn bg-dark-gray pa3 br2">
+            <!-- Summary will be populated here -->
+          </div>
+          
+          <div id="no-summary" class="tc pa4 bg-dark-gray br2 o-50">
+            <p class="white-60 ma0">No daily summary available for the last 24 hours</p>
+            <p class="white-40 ma0 mt2 f6">Click "Generate Summary" to create one</p>
+          </div>
+        </div>
         
         <!-- Messages Section -->
         <div class="mb4">
@@ -85,11 +112,20 @@ module.exports = function channelDetail (params) {
     })
   }
   
+  // Add event listener for generate summary button
+  const summaryBtn = page.querySelector('#generate-summary')
+  summaryBtn.addEventListener('click', () => {
+    generateSummary(guildId, channelId, page)
+  })
+  
   // Load guild and channel info
   loadChannelInfo(guildId, channelId, page)
   
   // Check current collection status
   checkCollectionStatus(guildId, channelId, page)
+  
+  // Load daily summary
+  loadDailySummary(guildId, channelId, page)
   
   // Load recent messages
   loadMessages(guildId, channelId, page)
@@ -293,6 +329,120 @@ function loadPreviewMessages (guildId, channelId, page) {
       } else {
         alert('Failed to load preview messages. Please try again.')
       }
+    })
+}
+
+function loadDailySummary(guildId, channelId, page) {
+  // Create API client instance
+  const api = new ApiClient()
+  
+  api.checkSummary(guildId, channelId, '24h')
+    .then(data => {
+      const summaryContent = page.querySelector('#summary-content')
+      const noSummary = page.querySelector('#no-summary')
+      const generateBtn = page.querySelector('#generate-summary')
+      
+      if (data.summary) {
+        // Show existing summary
+        noSummary.classList.add('dn')
+        summaryContent.classList.remove('dn')
+        
+        const createdDate = new Date(data.createdAt).toLocaleString()
+        summaryContent.innerHTML = `
+          <div class="mb3">
+            <div class="flex items-center justify-between mb2">
+              <h4 class="ma0 f6 fw6 white-80">Daily Summary (Last 24 Hours)</h4>
+              <span class="f7 white-40">Generated ${createdDate}</span>
+            </div>
+            <p class="ma0 f7 white-60 mb3">${data.messageCount} messages processed</p>
+          </div>
+          <div class="white-70 lh-copy f6">
+            ${data.summary.replace(/\n/g, '<br>')}
+          </div>
+        `
+        
+        // Update button text to indicate recreation
+        generateBtn.textContent = 'Regenerate Summary'
+      } else {
+        // No summary exists
+        summaryContent.classList.add('dn')
+        noSummary.classList.remove('dn')
+        generateBtn.textContent = 'Generate Summary'
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load daily summary:', err)
+      // Show no summary state on error
+      const summaryContent = page.querySelector('#summary-content')
+      const noSummary = page.querySelector('#no-summary')
+      const generateBtn = page.querySelector('#generate-summary')
+      
+      summaryContent.classList.add('dn')
+      noSummary.classList.remove('dn')
+      generateBtn.textContent = 'Generate Summary'
+    })
+}
+
+function generateSummary(guildId, channelId, page) {
+  const summaryLoading = page.querySelector('#summary-loading')
+  const summaryContent = page.querySelector('#summary-content')
+  const noSummary = page.querySelector('#no-summary')
+  const generateBtn = page.querySelector('#generate-summary')
+  
+  // Show loading state
+  summaryLoading.classList.remove('dn')
+  summaryContent.classList.add('dn')
+  noSummary.classList.add('dn')
+  generateBtn.disabled = true
+  generateBtn.textContent = 'Generating...'
+  
+  // Create API client instance
+  const api = new ApiClient()
+  
+  api.generateSummary(guildId, channelId, '24h')
+    .then(data => {
+      // Hide loading state
+      summaryLoading.classList.add('dn')
+      generateBtn.disabled = false
+      
+      if (data.summary) {
+        // Show new summary
+        summaryContent.classList.remove('dn')
+        
+        const createdDate = new Date().toLocaleString()
+        summaryContent.innerHTML = `
+          <div class="mb3">
+            <div class="flex items-center justify-between mb2">
+              <h4 class="ma0 f6 fw6 white-80">Daily Summary (Last 24 Hours)</h4>
+              <span class="f7 white-40">Generated ${createdDate}</span>
+            </div>
+            <p class="ma0 f7 white-60 mb3">${data.messageCount} messages processed</p>
+          </div>
+          <div class="white-70 lh-copy f6">
+            ${data.summary.replace(/\n/g, '<br>')}
+          </div>
+        `
+        
+        generateBtn.textContent = 'Regenerate Summary'
+      } else {
+        // Show error or no messages state
+        noSummary.classList.remove('dn')
+        const noSummaryText = page.querySelector('#no-summary p')
+        noSummaryText.textContent = data.error || 'No messages found in the last 24 hours'
+        generateBtn.textContent = 'Generate Summary'
+      }
+    })
+    .catch(err => {
+      console.error('Failed to generate summary:', err)
+      
+      // Hide loading state and show error
+      summaryLoading.classList.add('dn')
+      generateBtn.disabled = false
+      generateBtn.textContent = 'Generate Summary'
+      
+      noSummary.classList.remove('dn')
+      const noSummaryText = page.querySelector('#no-summary p')
+      noSummaryText.textContent = 'Failed to generate summary. Please try again.'
     })
 }
 
