@@ -490,7 +490,20 @@ function generateSummary (guildId, channelId, page) {
       // Show metadata if available
       let metadataHtml = ''
       if (data.metadata) {
-        if (data.metadata.approach === 'multi-pass') {
+        if (data.metadata.approach === 'multi-pass-with-catchall') {
+          metadataHtml = `
+            <div class="mb3 bg-near-black pa2 br2">
+              <h5 class="ma0 mb2 f7 fw6 white-60">Multi-Pass Processing with Catchall:</h5>
+              <div class="f7 white-50">
+                <div>Passes: ${data.metadata.passes}</div>
+                <div>Topics Found: ${data.metadata.topicsFound}</div>
+                <div>Stories Generated: ${data.metadata.storiesGenerated}</div>
+                <div>Community Highlights: ${data.metadata.hasCatchall ? 'Yes' : 'No'}</div>
+                <div class="mt1">Topics: ${data.metadata.topics.map(t => t.description).join(', ')}</div>
+              </div>
+            </div>
+          `
+        } else if (data.metadata.approach === 'multi-pass') {
           metadataHtml = `
             <div class="mb3 bg-near-black pa2 br2">
               <h5 class="ma0 mb2 f7 fw6 white-60">Multi-Pass Processing Results:</h5>
