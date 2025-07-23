@@ -35,6 +35,15 @@ const summarySchema = new mongoose.Schema({
     completion_tokens: Number,
     total_tokens: Number
   },
+  metadata: {
+    approach: String,
+    topicsFound: Number,
+    storiesGenerated: Number,
+    topics: [{
+      description: String,
+      substance: Number
+    }]
+  },
   createdAt: {
     type: Date,
     default: Date.now

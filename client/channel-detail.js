@@ -1,42 +1,42 @@
 const html = require('nanohtml')
 
 // Simple markdown to HTML converter for newspaper content
-function renderMarkdownToHTML(markdown) {
+function renderMarkdownToHTML (markdown) {
   if (!markdown) return ''
-  
+
   return markdown
     // Headers
     .replace(/^### (.*$)/gim, '<h3 class="f5 fw6 white-90 mt4 mb2">$1</h3>')
     .replace(/^## (.*$)/gim, '<h2 class="f4 fw6 white-90 mt4 mb3">$1</h2>')
     .replace(/^# (.*$)/gim, '<h1 class="f3 fw6 white-90 mt4 mb3">$1</h1>')
-    
+
     // Italics (channel names)
     .replace(/\*([^*]+)\*/g, '<em class="white-60">$1</em>')
-    
+
     // Links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="white-80 hover-white underline" target="_blank" rel="noopener">$1</a>')
-    
+
     // Bold quotes and usernames
     .replace(/"([^"]+),"\s*said\s+(\w+)/g, '<strong class="white-90">"$1,"</strong> said <strong class="blue">$2</strong>')
-    
-    // Horizontal rule  
+
+    // Horizontal rule
     .replace(/^---$/gm, '<hr class="mv4 b--white-20">')
-    
+
     // Bullet points
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    
+
     // Wrap consecutive list items in ul tags
-    .replace(/(<li>.*<\/li>)/gs, function(match) {
+    .replace(/(<li>.*<\/li>)/gs, function (match) {
       return '<ul class="mt2 mb3 pl3">' + match + '</ul>'
     })
-    
+
     // Line breaks and paragraphs
     .replace(/\n\n/g, '</p><p class="mt3 mb0 lh-copy">')
     .replace(/\n/g, '<br>')
-    
+
     // Wrap in paragraph tags (avoid wrapping ul/h tags)
     .replace(/^(?!<[uh]|<li)(.+)/gm, '<p class="mt3 mb0 lh-copy">$1</p>')
-    
+
     // Clean up empty paragraphs
     .replace(/<p[^>]*><\/p>/g, '')
     .replace(/<p[^>]*><br><\/p>/g, '')
@@ -44,7 +44,7 @@ function renderMarkdownToHTML(markdown) {
 
 module.exports = function channelDetail (params) {
   const { guildId, channelId } = params
-  
+
   const page = html`
     <div class="sans-serif">
       <header class="tc pv4">
@@ -94,7 +94,10 @@ module.exports = function channelDetail (params) {
               <div></div>
               <div></div>
             </div>
-            <p class="white-60 mt3">Generating summary...</p>
+            <p id="loading-status" class="white-60 mt3">Generating summary...</p>
+            <div id="debug-steps" class="mt3 tl white-70 f7 lh-copy dn">
+              <!-- Debug steps will be populated here -->
+            </div>
           </div>
           
           <div id="summary-content" class="dn bg-dark-gray pa3 br2">
@@ -152,13 +155,13 @@ module.exports = function channelDetail (params) {
       </article>
     </div>
   `
-  
+
   // Add event listener for collection toggle
   const toggleBtn = page.querySelector('#collection-toggle')
   toggleBtn.addEventListener('click', () => {
     window.toggleCollection(guildId, channelId)
   })
-  
+
   // Add event listener for load preview button
   const previewBtn = page.querySelector('#load-preview')
   if (previewBtn) {
@@ -166,25 +169,25 @@ module.exports = function channelDetail (params) {
       loadPreviewMessages(guildId, channelId, page)
     })
   }
-  
+
   // Add event listener for generate summary button
   const summaryBtn = page.querySelector('#generate-summary')
   summaryBtn.addEventListener('click', () => {
     generateSummary(guildId, channelId, page)
   })
-  
+
   // Load guild and channel info
   loadChannelInfo(guildId, channelId, page)
-  
+
   // Check current collection status
   checkCollectionStatus(guildId, channelId, page)
-  
+
   // Load daily summary
   loadDailySummary(guildId, channelId, page)
-  
+
   // Load recent messages
   loadMessages(guildId, channelId, page)
-  
+
   return page
 }
 
@@ -197,19 +200,19 @@ function loadChannelInfo (guildId, channelId, page) {
     .then(([guilds, channels]) => {
       const guild = guilds.find(g => g.id === guildId)
       const channel = channels.find(c => c.id === channelId)
-      
+
       const loading = page.querySelector('#channel-info-loading')
       const info = page.querySelector('#channel-info')
       const guildNameEl = page.querySelector('#guild-name')
       const channelNameEl = page.querySelector('#channel-name')
-      
+
       loading.classList.add('dn')
       info.classList.remove('dn')
-      
+
       if (guild) {
         guildNameEl.textContent = guild.name
       }
-      
+
       if (channel) {
         channelNameEl.textContent = channel.name
       }
@@ -218,10 +221,10 @@ function loadChannelInfo (guildId, channelId, page) {
       console.error('Failed to load channel info:', err)
       const loading = page.querySelector('#channel-info-loading')
       const info = page.querySelector('#channel-info')
-      
+
       loading.classList.add('dn')
       info.classList.remove('dn')
-      
+
       // Show fallback text
       const guildNameEl = page.querySelector('#guild-name')
       const channelNameEl = page.querySelector('#channel-name')
@@ -235,7 +238,7 @@ function checkCollectionStatus (guildId, channelId, page) {
     .then(response => {
       const toggleBtn = page.querySelector('#collection-toggle')
       const toggleText = page.querySelector('#collection-toggle-text')
-      
+
       if (response.ok) {
         // Channel is being collected
         toggleBtn.className = 'bn br2 ph3 pv2 pointer f6 fw6 bg-red white'
@@ -267,16 +270,16 @@ function loadMessages (guildId, channelId, page) {
       const loading = page.querySelector('#loading')
       const messagesList = page.querySelector('#messages-list')
       const noMessages = page.querySelector('#no-messages')
-      
+
       loading.classList.add('dn')
-      
+
       if (!data.messages || data.messages.length === 0) {
         noMessages.classList.remove('dn')
         return
       }
-      
+
       messagesList.classList.remove('dn')
-      
+
       messagesList.innerHTML = data.messages.map(message => {
         const date = new Date(message.createdAt).toLocaleString()
         return `
@@ -288,11 +291,13 @@ function loadMessages (guildId, channelId, page) {
                   <span class="f7 white-40">${date}</span>
                 </div>
                 <p class="ma0 f6 white-70 lh-copy">${message.content || '<em>No text content</em>'}</p>
-                ${message.attachments && message.attachments.length > 0 ? `
+                ${message.attachments && message.attachments.length > 0
+? `
                   <div class="mt2">
                     <span class="f7 white-40">${message.attachments.length} attachment(s)</span>
                   </div>
-                ` : ''}
+                `
+: ''}
               </div>
             </div>
           </div>
@@ -303,7 +308,7 @@ function loadMessages (guildId, channelId, page) {
       console.error('Failed to load messages:', err)
       const loading = page.querySelector('#loading')
       const error = page.querySelector('#error')
-      
+
       loading.classList.add('dn')
       error.classList.remove('dn')
     })
@@ -313,15 +318,15 @@ function loadPreviewMessages (guildId, channelId, page) {
   const previewBtn = page.querySelector('#load-preview')
   const noMessages = page.querySelector('#no-messages')
   const messagesList = page.querySelector('#messages-list')
-  
+
   if (!previewBtn) {
     return
   }
-  
+
   // Show loading state
   previewBtn.textContent = 'Loading...'
   previewBtn.disabled = true
-  
+
   fetch(`/preview/${guildId}/${channelId}?limit=10`)
     .then(response => {
       if (!response.ok) {
@@ -333,7 +338,7 @@ function loadPreviewMessages (guildId, channelId, page) {
       // Hide no-messages section and show messages list
       noMessages.classList.add('dn')
       messagesList.classList.remove('dn')
-      
+
       // Add preview header
       const previewHeader = `
         <div class="bg-blue pa3 br2 mb3">
@@ -341,7 +346,7 @@ function loadPreviewMessages (guildId, channelId, page) {
           <p class="ma0 mt1 f7 white-80">Recent messages from ${data.channelName} (not stored)</p>
         </div>
       `
-      
+
       // Render messages with preview styling
       const messagesHtml = data.messages.map(message => {
         const date = new Date(message.createdAt).toLocaleString()
@@ -354,26 +359,28 @@ function loadPreviewMessages (guildId, channelId, page) {
                   <span class="f7 white-40">${date}</span>
                 </div>
                 <p class="ma0 f6 white-70 lh-copy">${message.content || '<em>No text content</em>'}</p>
-                ${message.attachments && message.attachments.length > 0 ? `
+                ${message.attachments && message.attachments.length > 0
+? `
                   <div class="mt2">
                     <span class="f7 white-40">${message.attachments.length} attachment(s)</span>
                   </div>
-                ` : ''}
+                `
+: ''}
               </div>
             </div>
           </div>
         `
       }).join('')
-      
+
       messagesList.innerHTML = previewHeader + messagesHtml
     })
     .catch(err => {
       console.error('Failed to load preview messages:', err)
-      
+
       // Reset button state
       previewBtn.textContent = 'Load Preview'
       previewBtn.disabled = false
-      
+
       // Show error message
       if (err.message.includes('503')) {
         alert('Discord client not ready. Please try again in a moment.')
@@ -387,21 +394,21 @@ function loadPreviewMessages (guildId, channelId, page) {
     })
 }
 
-function loadDailySummary(guildId, channelId, page) {
+function loadDailySummary (guildId, channelId, page) {
   // Create API client instance
   const api = new ApiClient()
-  
+
   api.checkSummary(guildId, channelId, '24h')
     .then(data => {
       const summaryContent = page.querySelector('#summary-content')
       const noSummary = page.querySelector('#no-summary')
       const generateBtn = page.querySelector('#generate-summary')
-      
+
       if (data.summary) {
         // Show existing summary
         noSummary.classList.add('dn')
         summaryContent.classList.remove('dn')
-        
+
         const createdDate = new Date(data.createdAt).toLocaleString()
         summaryContent.innerHTML = `
           <div class="mb3">
@@ -415,7 +422,7 @@ function loadDailySummary(guildId, channelId, page) {
             ${renderMarkdownToHTML(data.summary)}
           </div>
         `
-        
+
         // Update button text to indicate recreation
         generateBtn.textContent = 'Regenerate Summary'
       } else {
@@ -431,39 +438,82 @@ function loadDailySummary(guildId, channelId, page) {
       const summaryContent = page.querySelector('#summary-content')
       const noSummary = page.querySelector('#no-summary')
       const generateBtn = page.querySelector('#generate-summary')
-      
+
       summaryContent.classList.add('dn')
       noSummary.classList.remove('dn')
       generateBtn.textContent = 'Generate Summary'
     })
 }
 
-function generateSummary(guildId, channelId, page) {
+function generateSummary (guildId, channelId, page) {
   const summaryLoading = page.querySelector('#summary-loading')
   const summaryContent = page.querySelector('#summary-content')
   const noSummary = page.querySelector('#no-summary')
   const generateBtn = page.querySelector('#generate-summary')
-  
+  const debugSteps = page.querySelector('#debug-steps')
+
   // Show loading state
   summaryLoading.classList.remove('dn')
   summaryContent.classList.add('dn')
   noSummary.classList.add('dn')
+  debugSteps.classList.remove('dn')
   generateBtn.disabled = true
   generateBtn.textContent = 'Generating...'
-  
+
+  // Clear and show debug steps
+  debugSteps.innerHTML = '<h4 class="ma0 mb2 f6 fw6 white-80">Debug Steps:</h4>'
+
   // Create API client instance
   const api = new ApiClient()
-  
-  api.generateSummary(guildId, channelId, '24h')
+
+  api.generateSummary(guildId, channelId, '24h', { debug: true })
     .then(data => {
       // Hide loading state
       summaryLoading.classList.add('dn')
       generateBtn.disabled = false
-      
+
+      // Display debug steps if available
+      if (data.debugSteps && data.debugSteps.length > 0) {
+        const debugHtml = data.debugSteps.map(step => {
+          const time = new Date(step.timestamp).toLocaleTimeString()
+          return `<div class="mb2 pb2 bb b--white-10">
+            <span class="f7 white-40">[${time}]</span>
+            <span class="f7 white-70 ml2">${step.message}</span>
+          </div>`
+        }).join('')
+        debugSteps.innerHTML = `
+          <h4 class="ma0 mb2 f6 fw6 white-80">Debug Steps:</h4>
+          ${debugHtml}
+        `
+      }
+
+      // Show metadata if available
+      let metadataHtml = ''
+      if (data.metadata) {
+        if (data.metadata.approach === 'multi-pass') {
+          metadataHtml = `
+            <div class="mb3 bg-near-black pa2 br2">
+              <h5 class="ma0 mb2 f7 fw6 white-60">Multi-Pass Processing Results:</h5>
+              <div class="f7 white-50">
+                <div>Topics Found: ${data.metadata.topicsFound}</div>
+                <div>Stories Generated: ${data.metadata.storiesGenerated}</div>
+                <div class="mt1">Topics: ${data.metadata.topics.map(t => t.description).join(', ')}</div>
+              </div>
+            </div>
+          `
+        } else {
+          metadataHtml = `
+            <div class="mb3 bg-near-black pa2 br2">
+              <h5 class="ma0 f7 fw6 white-60">Single-Pass Processing</h5>
+            </div>
+          `
+        }
+      }
+
       if (data.summary) {
         // Show new summary
         summaryContent.classList.remove('dn')
-        
+
         const createdDate = new Date().toLocaleString()
         summaryContent.innerHTML = `
           <div class="mb3">
@@ -471,13 +521,14 @@ function generateSummary(guildId, channelId, page) {
               <h4 class="ma0 f6 fw6 white-80">Daily Summary (Last 24 Hours)</h4>
               <span class="f7 white-40">Generated ${createdDate}</span>
             </div>
-            <p class="ma0 f7 white-60 mb3">${data.messageCount} messages processed</p>
+            <p class="ma0 f7 white-60 mb3">${data.messageCount} messages processed | ${data.usage ? data.usage.total_tokens + ' tokens' : 'No usage data'}</p>
           </div>
+          ${metadataHtml}
           <div class="white-70 lh-copy f6 newspaper-content">
             ${renderMarkdownToHTML(data.summary)}
           </div>
         `
-        
+
         generateBtn.textContent = 'Regenerate Summary'
       } else {
         // Show error or no messages state
@@ -489,12 +540,13 @@ function generateSummary(guildId, channelId, page) {
     })
     .catch(err => {
       console.error('Failed to generate summary:', err)
-      
-      // Hide loading state and show error
+
+      // Hide loading state and debug steps, show error
       summaryLoading.classList.add('dn')
+      debugSteps.classList.add('dn')
       generateBtn.disabled = false
       generateBtn.textContent = 'Generate Summary'
-      
+
       noSummary.classList.remove('dn')
       const noSummaryText = page.querySelector('#no-summary p')
       noSummaryText.textContent = 'Failed to generate summary. Please try again.'
@@ -508,13 +560,13 @@ window.toggleCollection = async function (guildId, channelId) {
     // Check if channel is currently being collected
     const currentResponse = await fetch(`/settings/${guildId}/${channelId}`)
     const isCurrentlyCollecting = currentResponse.ok
-    
+
     if (isCurrentlyCollecting) {
       // Stop collecting - remove channel from collection
       const response = await fetch(`/settings/${guildId}/${channelId}`, {
         method: 'DELETE'
       })
-      
+
       if (response.ok) {
         // Update button
         const toggleBtn = document.querySelector('#collection-toggle')
@@ -536,7 +588,7 @@ window.toggleCollection = async function (guildId, channelId) {
           channelId
         })
       })
-      
+
       if (response.ok) {
         // Update button
         const toggleBtn = document.querySelector('#collection-toggle')

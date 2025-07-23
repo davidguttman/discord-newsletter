@@ -6,7 +6,7 @@ const ApiClient = require('../lib/api-client')
 // Create API client instance
 const api = new ApiClient('https://discnews.jump.sh')
 
-async function main() {
+async function main () {
   const command = process.argv[2]
   const args = process.argv.slice(3)
 
@@ -26,7 +26,7 @@ async function main() {
         }
         const guildId = args[0]
         const channels = await api.getChannels(guildId)
-        
+
         // Check if we should save to file
         const saveIndex = args.indexOf('--save')
         if (saveIndex !== -1 && args[saveIndex + 1]) {
@@ -61,7 +61,7 @@ async function main() {
         const sort = args[3] || '-createdAt'
         const messages = await api.getMessages(msgGuildId, msgChannelId, {
           limit: msgLimit,
-          sort: sort
+          sort
         })
         console.log(JSON.stringify(messages, null, 2))
         break

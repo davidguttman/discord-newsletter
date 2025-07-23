@@ -15,11 +15,11 @@ function setDiscordClient (client) {
 router.get('/:guildId/:channelId', autoCatch(async (req, res) => {
   const { guildId, channelId } = req.params
   const limit = Math.min(parseInt(req.query.limit) || 10, 20) // Max 20 messages
-  
+
   if (!discordClient || !discordClient.user) {
-    return res.status(503).json({ 
+    return res.status(503).json({
       error: 'Discord client not ready',
-      needsSettings: true 
+      needsSettings: true
     })
   }
 
@@ -39,7 +39,7 @@ router.get('/:guildId/:channelId', autoCatch(async (req, res) => {
 
   try {
     const messages = await channel.messages.fetch({ limit })
-    
+
     const previewMessages = Array.from(messages.values())
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .map(message => ({

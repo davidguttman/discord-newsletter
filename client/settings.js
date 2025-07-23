@@ -44,30 +44,30 @@ module.exports = function settings (params) {
       </article>
     </div>
   `
-  
+
   // Add form submission handler
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
-    
+
     const formData = new FormData(e.target)
     const emailTo = formData.get('email-to')
     const emailFrom = formData.get('email-from')
-    
+
     if (!emailTo || !emailFrom) {
       alert('Please fill in both email addresses')
       return
     }
-    
+
     try {
       // Get current settings to update email fields only
       const currentResponse = await fetch('/settings')
       const currentSettings = currentResponse.ok ? await currentResponse.json() : null
-      
+
       if (!currentSettings) {
         alert('No channel is currently being collected. Please select a channel first by browsing guilds.')
         return
       }
-      
+
       const response = await fetch(`/settings/${currentSettings._id}`, {
         method: 'PUT',
         headers: {
@@ -80,7 +80,7 @@ module.exports = function settings (params) {
           emailFrom
         })
       })
-      
+
       if (response.ok) {
         alert('Email settings saved successfully!')
         window.location.hash = '/'
@@ -92,7 +92,7 @@ module.exports = function settings (params) {
       alert(`Error: ${err.message}`)
     }
   })
-  
+
   // Load existing settings
   fetch('/settings')
     .then(response => {
@@ -110,6 +110,6 @@ module.exports = function settings (params) {
     .catch(() => {
       // Ignore errors - means no settings exist yet
     })
-  
+
   return form
 }

@@ -28,7 +28,7 @@ module.exports = function guilds (params) {
       </article>
     </div>
   `
-  
+
   // Load guilds from API and get current settings
   Promise.all([
     fetch('/guilds').then(r => r.ok ? r.json() : []),
@@ -37,18 +37,18 @@ module.exports = function guilds (params) {
     .then(([guilds, settings]) => {
       const loading = page.querySelector('#loading')
       const guildsList = page.querySelector('#guilds-list')
-      
+
       loading.classList.add('dn')
       guildsList.classList.remove('dn')
-      
+
       if (guilds.length === 0) {
         guildsList.innerHTML = '<p class="tc white-60">No guilds found</p>'
         return
       }
-      
+
       // Get set of guild IDs that have active channels
       const activeGuildIds = new Set(settings.map(s => s.guildId))
-      
+
       // Sort guilds - active ones first, then alphabetically
       const sortedGuilds = guilds.sort((a, b) => {
         const aActive = activeGuildIds.has(a.id)
@@ -57,12 +57,12 @@ module.exports = function guilds (params) {
         if (bActive && !aActive) return 1
         return a.name.localeCompare(b.name)
       })
-      
+
       guildsList.innerHTML = sortedGuilds.map(guild => {
         const isActive = activeGuildIds.has(guild.id)
         const channelCount = settings.filter(s => s.guildId === guild.id).length
         const activeIndicator = isActive ? `<span class="f7 bg-green white ph2 pv1 br2">${channelCount} CHANNEL${channelCount > 1 ? 'S' : ''}</span>` : ''
-        
+
         return `
           <div class="bb b--dark-gray ${isActive ? 'bg-dark-green' : ''}">
             <a href="#/guilds/${guild.id}/channels" class="link white-80 hover-white dim flex items-center pa3">
@@ -83,10 +83,10 @@ module.exports = function guilds (params) {
       console.error('Failed to load guilds:', err)
       const loading = page.querySelector('#loading')
       const error = page.querySelector('#error')
-      
+
       loading.classList.add('dn')
       error.classList.remove('dn')
-      
+
       // Check if it's a settings issue
       if (err.message.includes('503')) {
         error.innerHTML = `
@@ -97,6 +97,6 @@ module.exports = function guilds (params) {
         `
       }
     })
-  
+
   return page
 }

@@ -62,13 +62,14 @@ router.get('/', autoCatch(async (req, res) => {
     messageCount,
     summary: existingSummary?.summary || null,
     createdAt: existingSummary?.createdAt || null,
-    usage: existingSummary?.usage || null
+    usage: existingSummary?.usage || null,
+    metadata: existingSummary?.metadata || null
   })
 }))
 
 // POST /summarize - Generate a new summary
 router.post('/', autoCatch(async (req, res) => {
-  const { guildId, channelId, since = '24h', model, maxTokens } = req.body
+  const { guildId, channelId, since = '24h', model, maxTokens, debug } = req.body
 
   if (!guildId || !channelId) {
     return res.status(400).json({ error: 'guildId and channelId are required' })
@@ -114,6 +115,7 @@ router.post('/', autoCatch(async (req, res) => {
   const options = {}
   if (model) options.model = model
   if (maxTokens) options.maxTokens = parseInt(maxTokens)
+  if (debug) options.debug = true
 
   const summary = await openai.summarizeMessages(formattedMessages, options)
 
@@ -126,13 +128,14 @@ router.post('/', autoCatch(async (req, res) => {
     endDate,
     messageCount: messages.length,
     summary: summary.summary,
-    usage: summary.usage
+    usage: summary.usage,
+    metadata: summary.metadata
   })
 
   await summaryDoc.save()
   console.log(`Saved summary to database for ${guildId}:${channelId}:${since}`)
 
-  res.json({
+  const response = {
     guildId,
     channelId,
     since,
@@ -141,8 +144,16 @@ router.post('/', autoCatch(async (req, res) => {
     messageCount: messages.length,
     summary: summary.summary,
     usage: summary.usage,
+    metadata: summary.metadata,
     createdAt: summaryDoc.createdAt
-  })
+  }
+
+  // Include debug steps if requested
+  if (debug && summary.debugSteps) {
+    response.debugSteps = summary.debugSteps
+  }
+
+  res.json(response)
 }))
 
 // Summarize messages by channel and time range

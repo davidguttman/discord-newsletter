@@ -13,9 +13,9 @@ function setDiscordClient (client) {
 // GET /guilds - Get all guilds the bot is in
 router.get('/', autoCatch(async (req, res) => {
   if (!discordClient || !discordClient.user) {
-    return res.status(503).json({ 
+    return res.status(503).json({
       error: 'Discord client not ready. Please configure settings first.',
-      needsSettings: true 
+      needsSettings: true
     })
   }
 
@@ -33,18 +33,18 @@ router.get('/', autoCatch(async (req, res) => {
 router.get('/:guildId/channels', autoCatch(async (req, res) => {
   console.log(`Channels request for guild: ${req.params.guildId}`)
   console.log(`Discord client ready: ${!!(discordClient && discordClient.user)}`)
-  
+
   if (!discordClient || !discordClient.user) {
     console.log('Discord client not ready')
-    return res.status(503).json({ 
+    return res.status(503).json({
       error: 'Discord client not ready',
-      needsSettings: true 
+      needsSettings: true
     })
   }
 
   const guild = discordClient.guilds.cache.get(req.params.guildId)
   console.log(`Guild found: ${!!guild}`)
-  
+
   if (!guild) {
     console.log('Guild not found in cache')
     return res.status(404).json({ error: 'Guild not found' })
@@ -54,14 +54,14 @@ router.get('/:guildId/channels', autoCatch(async (req, res) => {
     .filter(channel => {
       // Only text channels
       if (channel.type !== 'GUILD_TEXT' && channel.type !== 0) return false
-      
+
       // Check if bot has both VIEW_CHANNEL and READ_MESSAGE_HISTORY permissions
       const botMember = guild.members.cache.get(discordClient.user.id)
       if (!botMember) return false
-      
+
       const permissions = channel.permissionsFor(botMember)
-      return permissions && 
-             permissions.has('VIEW_CHANNEL') && 
+      return permissions &&
+             permissions.has('VIEW_CHANNEL') &&
              permissions.has('READ_MESSAGE_HISTORY')
     })
     .map(channel => ({

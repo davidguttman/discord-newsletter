@@ -2,7 +2,7 @@ const html = require('nanohtml')
 
 module.exports = function channels (params) {
   const guildId = params.guildId
-  
+
   const page = html`
     <div class="sans-serif">
       <header class="tc pv4">
@@ -33,7 +33,7 @@ module.exports = function channels (params) {
       </article>
     </div>
   `
-  
+
   // Load channels from API and get current settings
   Promise.all([
     fetch(`/guilds/${guildId}/channels`).then(r => r.ok ? r.json() : []),
@@ -42,22 +42,22 @@ module.exports = function channels (params) {
     .then(([channels, settings]) => {
       const loading = page.querySelector('#loading')
       const channelsList = page.querySelector('#channels-list')
-      
+
       loading.classList.add('dn')
       channelsList.classList.remove('dn')
-      
+
       if (channels.length === 0) {
         channelsList.innerHTML = '<p class="tc white-60">No channels found</p>'
         return
       }
-      
+
       // Get set of active channel IDs for this guild
       const activeChannelIds = new Set(
         settings
           .filter(s => s.guildId === guildId)
           .map(s => s.channelId)
       )
-      
+
       // Sort channels - active ones first, then by position
       const sortedChannels = channels.sort((a, b) => {
         const aActive = activeChannelIds.has(a.id)
@@ -66,11 +66,11 @@ module.exports = function channels (params) {
         if (bActive && !aActive) return 1
         return a.position - b.position
       })
-      
+
       channelsList.innerHTML = sortedChannels.map(channel => {
         const isActive = activeChannelIds.has(channel.id)
         const activeIndicator = isActive ? '<span class="f7 bg-green white ph2 pv1 br2">COLLECTING</span>' : ''
-        
+
         return `
           <div class="bb b--dark-gray ${isActive ? 'bg-dark-green' : ''}">
             <a href="#/guilds/${guildId}/channels/${channel.id}" class="link white-80 hover-white dim flex items-center pa3">
@@ -90,10 +90,10 @@ module.exports = function channels (params) {
       console.error('Failed to load channels:', err)
       const loading = page.querySelector('#loading')
       const error = page.querySelector('#error')
-      
+
       loading.classList.add('dn')
       error.classList.remove('dn')
-      
+
       // Show better error message
       if (err.message.includes('404')) {
         error.innerHTML = '<p class="white-60">Guild not found or bot not in this guild.</p>'
@@ -101,6 +101,6 @@ module.exports = function channels (params) {
         error.innerHTML = '<p class="white-60">Discord client not ready. Please try again in a moment.</p>'
       }
     })
-  
+
   return page
 }

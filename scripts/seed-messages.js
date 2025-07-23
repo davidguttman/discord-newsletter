@@ -9,22 +9,22 @@ const Message = require('../models/message')
 // Rate limiting delay between requests (in milliseconds)
 const DELAY_BETWEEN_REQUESTS = 2000 // 2 seconds
 
-async function sleep(ms) {
+async function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function seedMessages() {
+async function seedMessages () {
   try {
     console.log('Starting message seeding process...')
-    
+
     // Start Discord client
     console.log('Starting Discord client...')
     await discord.start()
-    
+
     // Get Discord client
     const client = discord.getClient()
     console.log(`✅ Discord client ready as ${client.user.tag}`)
-    
+
     // Get all active channels from settings
     const activeChannels = await Settings.find()
     console.log(`Found ${activeChannels.length} active channels`)
@@ -97,7 +97,7 @@ async function seedMessages() {
             fetchOptions.before = lastMessageId
           }
 
-          console.log(`    Fetching batch of messages...`)
+          console.log('    Fetching batch of messages...')
           const messages = await channel.messages.fetch(fetchOptions)
 
           if (messages.size === 0) {
@@ -170,12 +170,11 @@ async function seedMessages() {
               threadId: discordMsg.thread?.id || null,
               parentId: discordMsg.channel?.parent?.id || null,
               replyToId: discordMsg.reference?.messageId || null,
-              mentionsReplyTarget: discordMsg.reference ? true : false
+              mentionsReplyTarget: !!discordMsg.reference
             })
 
             await messageDoc.save()
             savedCount++
-
           } catch (saveError) {
             console.error(`    ❌ Error saving message ${discordMsg.id}:`, saveError.message)
           }
@@ -188,7 +187,6 @@ async function seedMessages() {
         // Rate limit between channels
         console.log(`    ⏱️  Waiting ${DELAY_BETWEEN_REQUESTS}ms before next channel...`)
         await sleep(DELAY_BETWEEN_REQUESTS)
-
       } catch (channelError) {
         console.error(`  ❌ Error processing channel ${channelId}:`, channelError.message)
       }
@@ -198,7 +196,6 @@ async function seedMessages() {
     console.log(`- Channels processed: ${totalChannelsProcessed}/${activeChannels.length}`)
     console.log(`- Total messages saved: ${totalMessages}`)
     console.log('✅ Message seeding completed')
-
   } catch (error) {
     console.error('❌ Fatal error during message seeding:', error)
     process.exit(1)

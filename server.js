@@ -24,26 +24,26 @@ async function setupDevServer () {
     const budoPort = await getPort()
     console.log(`Found available port: ${budoPort}`)
     console.log(`Starting budo dev server on port ${budoPort}`)
-    
+
     return new Promise((resolve, reject) => {
       budoServer = budo('client/index.js', {
         live: true,
         stream: process.stdout,
         port: budoPort,
-        portfind: false,  // Don't find port, use the one I specified
+        portfind: false, // Don't find port, use the one I specified
         dir: 'dist',
         pushstate: true
       })
-      
+
       budoServer.on('connect', (ev) => {
         console.log(`Budo server running at http://localhost:${ev.port}`)
-        
+
         // Proxy root requests to budo in dev
         app.use('/', (req, res, next) => {
           // Skip API routes
-          if (req.path.startsWith('/messages') || 
-              req.path.startsWith('/summarize') || 
-              req.path.startsWith('/email-summary') || 
+          if (req.path.startsWith('/messages') ||
+              req.path.startsWith('/summarize') ||
+              req.path.startsWith('/email-summary') ||
               req.path.startsWith('/settings') ||
               req.path.startsWith('/guilds') ||
               req.path.startsWith('/preview') ||
@@ -58,10 +58,10 @@ async function setupDevServer () {
           })
           proxy(req, res, next)
         })
-        
+
         resolve()
       })
-      
+
       budoServer.on('error', reject)
     })
   } else {

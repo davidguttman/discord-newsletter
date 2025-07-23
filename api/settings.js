@@ -13,30 +13,30 @@ router.get('/', autoCatch(async (req, res) => {
 router.get('/:guildId/:channelId', autoCatch(async (req, res) => {
   const { guildId, channelId } = req.params
   const setting = await Settings.findOne({ guildId, channelId })
-  
+
   if (!setting) {
     return res.status(404).json({ error: 'Channel not being collected' })
   }
-  
+
   res.json(setting)
 }))
 
 // POST /settings - Add channel to collection
 router.post('/', autoCatch(async (req, res) => {
   const { guildId, channelId } = req.body
-  
+
   if (!guildId || !channelId) {
-    return res.status(400).json({ 
-      error: 'Both guildId and channelId are required' 
+    return res.status(400).json({
+      error: 'Both guildId and channelId are required'
     })
   }
-  
+
   try {
     const settings = new Settings({
       guildId,
       channelId
     })
-    
+
     await settings.save()
     res.status(201).json(settings)
   } catch (error) {
@@ -51,40 +51,40 @@ router.post('/', autoCatch(async (req, res) => {
 // PUT /settings/:id - Update existing settings
 router.put('/:id', autoCatch(async (req, res) => {
   const { guildId, channelId } = req.body
-  
+
   const settings = await Settings.findByIdAndUpdate(
     req.params.id,
     { guildId, channelId },
     { new: true, runValidators: true }
   )
-  
+
   if (!settings) {
     return res.status(404).json({ error: 'Settings not found' })
   }
-  
+
   res.json(settings)
 }))
 
-// DELETE /settings/:guildId/:channelId - Remove channel from collection  
+// DELETE /settings/:guildId/:channelId - Remove channel from collection
 router.delete('/:guildId/:channelId', autoCatch(async (req, res) => {
   const { guildId, channelId } = req.params
   const settings = await Settings.findOneAndDelete({ guildId, channelId })
-  
+
   if (!settings) {
     return res.status(404).json({ error: 'Channel not being collected' })
   }
-  
+
   res.json({ message: 'Channel removed from collection' })
 }))
 
 // DELETE /settings/:id - Delete settings by ID (legacy support)
 router.delete('/:id', autoCatch(async (req, res) => {
   const settings = await Settings.findByIdAndDelete(req.params.id)
-  
+
   if (!settings) {
     return res.status(404).json({ error: 'Settings not found' })
   }
-  
+
   res.json({ message: 'Settings deleted' })
 }))
 
