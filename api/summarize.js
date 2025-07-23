@@ -1,23 +1,13 @@
 const express = require('express')
 const autoCatch = require('../lib/auto-catch')
 const Message = require('../models/message')
+const Summary = require('../models/summary')
 const messageFormatter = require('../lib/message-formatter')
 const openai = require('../lib/openai')
 const marked = require('marked')
 const ms = require('ms')
 
 const router = express.Router()
-
-// In-memory cache for summaries (key: guildId:channelId:since, value: summary data)
-const summaryCache = new Map()
-
-// Helper function to generate cache key
-function getCacheKey(guildId, channelId, since) {
-  // Round to the nearest hour to allow some cache reuse
-  const now = new Date()
-  const hour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours())
-  return `${guildId}:${channelId}:${since}:${hour.getTime()}`
-}
 
 // GET /summarize - Check for existing summary or return message count for a time period
 router.get('/', autoCatch(async (req, res) => {
@@ -54,9 +44,14 @@ router.get('/', autoCatch(async (req, res) => {
   // Get message count
   const messageCount = await Message.countDocuments(query)
 
-  // Check for cached summary
-  const cacheKey = getCacheKey(guildId, channelId, since)
-  const cachedSummary = summaryCache.get(cacheKey)
+  // Check for existing summary in database (within last 4 hours to allow some reuse)
+  const recentSummaryThreshold = new Date(Date.now() - (4 * 60 * 60 * 1000)) // 4 hours ago
+  const existingSummary = await Summary.findOne({
+    guildId,
+    channelId,
+    since,
+    createdAt: { $gte: recentSummaryThreshold }
+  }).sort({ createdAt: -1 })
 
   res.json({
     guildId,
@@ -65,9 +60,9 @@ router.get('/', autoCatch(async (req, res) => {
     startDate,
     endDate,
     messageCount,
-    summary: cachedSummary?.summary || null,
-    createdAt: cachedSummary?.createdAt || null,
-    usage: cachedSummary?.usage || null
+    summary: existingSummary?.summary || null,
+    createdAt: existingSummary?.createdAt || null,
+    usage: existingSummary?.usage || null
   })
 }))
 
@@ -122,9 +117,22 @@ router.post('/', autoCatch(async (req, res) => {
 
   const summary = await openai.summarizeMessages(formattedMessages, options)
 
-  // Cache the summary
-  const cacheKey = getCacheKey(guildId, channelId, since)
-  const summaryData = {
+  // Save summary to database
+  const summaryDoc = new Summary({
+    guildId,
+    channelId,
+    since,
+    startDate,
+    endDate,
+    messageCount: messages.length,
+    summary: summary.summary,
+    usage: summary.usage
+  })
+
+  await summaryDoc.save()
+  console.log(`Saved summary to database for ${guildId}:${channelId}:${since}`)
+
+  res.json({
     guildId,
     channelId,
     since,
@@ -133,13 +141,8 @@ router.post('/', autoCatch(async (req, res) => {
     messageCount: messages.length,
     summary: summary.summary,
     usage: summary.usage,
-    createdAt: new Date()
-  }
-  
-  summaryCache.set(cacheKey, summaryData)
-  console.log(`Cached summary for ${cacheKey}`)
-
-  res.json(summaryData)
+    createdAt: summaryDoc.createdAt
+  })
 }))
 
 // Summarize messages by channel and time range

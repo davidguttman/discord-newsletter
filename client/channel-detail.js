@@ -1,5 +1,47 @@
 const html = require('nanohtml')
 
+// Simple markdown to HTML converter for newspaper content
+function renderMarkdownToHTML(markdown) {
+  if (!markdown) return ''
+  
+  return markdown
+    // Headers
+    .replace(/^### (.*$)/gim, '<h3 class="f5 fw6 white-90 mt4 mb2">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="f4 fw6 white-90 mt4 mb3">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="f3 fw6 white-90 mt4 mb3">$1</h1>')
+    
+    // Italics (channel names)
+    .replace(/\*([^*]+)\*/g, '<em class="white-60">$1</em>')
+    
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="white-80 hover-white underline" target="_blank" rel="noopener">$1</a>')
+    
+    // Bold quotes and usernames
+    .replace(/"([^"]+),"\s*said\s+(\w+)/g, '<strong class="white-90">"$1,"</strong> said <strong class="blue">$2</strong>')
+    
+    // Horizontal rule  
+    .replace(/^---$/gm, '<hr class="mv4 b--white-20">')
+    
+    // Bullet points
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    
+    // Wrap consecutive list items in ul tags
+    .replace(/(<li>.*<\/li>)/gs, function(match) {
+      return '<ul class="mt2 mb3 pl3">' + match + '</ul>'
+    })
+    
+    // Line breaks and paragraphs
+    .replace(/\n\n/g, '</p><p class="mt3 mb0 lh-copy">')
+    .replace(/\n/g, '<br>')
+    
+    // Wrap in paragraph tags (avoid wrapping ul/h tags)
+    .replace(/^(?!<[uh]|<li)(.+)/gm, '<p class="mt3 mb0 lh-copy">$1</p>')
+    
+    // Clean up empty paragraphs
+    .replace(/<p[^>]*><\/p>/g, '')
+    .replace(/<p[^>]*><br><\/p>/g, '')
+}
+
 module.exports = function channelDetail (params) {
   const { guildId, channelId } = params
   
@@ -58,6 +100,19 @@ module.exports = function channelDetail (params) {
           <div id="summary-content" class="dn bg-dark-gray pa3 br2">
             <!-- Summary will be populated here -->
           </div>
+          
+          <style>
+            .newspaper-content h1 { border-bottom: 2px solid #357edd; padding-bottom: 8px; }
+            .newspaper-content h2 { border-bottom: 1px solid #357edd; padding-bottom: 4px; }
+            .newspaper-content h3 { color: #357edd; }
+            .newspaper-content em { font-style: italic; font-size: 0.9em; }
+            .newspaper-content a { transition: all 0.2s ease; }
+            .newspaper-content a:hover { color: #357edd; }
+            .newspaper-content strong { font-weight: 600; }
+            .newspaper-content hr { border: none; border-top: 1px solid rgba(255,255,255,0.2); }
+            .newspaper-content ul { margin: 1rem 0; padding-left: 1.5rem; }
+            .newspaper-content li { margin-bottom: 0.5rem; }
+          </style>
           
           <div id="no-summary" class="tc pa4 bg-dark-gray br2 o-50">
             <p class="white-60 ma0">No daily summary available for the last 24 hours</p>
@@ -356,8 +411,8 @@ function loadDailySummary(guildId, channelId, page) {
             </div>
             <p class="ma0 f7 white-60 mb3">${data.messageCount} messages processed</p>
           </div>
-          <div class="white-70 lh-copy f6">
-            ${data.summary.replace(/\n/g, '<br>')}
+          <div class="white-70 lh-copy f6 newspaper-content">
+            ${renderMarkdownToHTML(data.summary)}
           </div>
         `
         
@@ -418,8 +473,8 @@ function generateSummary(guildId, channelId, page) {
             </div>
             <p class="ma0 f7 white-60 mb3">${data.messageCount} messages processed</p>
           </div>
-          <div class="white-70 lh-copy f6">
-            ${data.summary.replace(/\n/g, '<br>')}
+          <div class="white-70 lh-copy f6 newspaper-content">
+            ${renderMarkdownToHTML(data.summary)}
           </div>
         `
         
