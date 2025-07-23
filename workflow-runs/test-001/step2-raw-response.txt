@@ -1,0 +1,66 @@
+```json
+{
+  "topics": [
+    {
+      "id": "graph-based-rag-discussion",
+      "description": "Discussion about 'When Vectors Break Down: Graph-Based RAG' and the desired flow for it."
+    },
+    {
+      "id": "tool-call-timeouts-in-ai-frameworks",
+      "description": "Discussion about tool call execution times and timeouts in AI frameworks, specifically mentioning Claude Desktop, Cline, n8n, and LibreChat, and strategies for handling long-running calls."
+    },
+    {
+      "id": "humanloop-shutdown-announcement",
+      "description": "Announcement and sharing of a Hacker News link regarding the shutdown of Humanloop."
+    },
+    {
+      "id": "mcp-framework-discussion",
+      "description": "Discussion about the 'mcp' (likely Model-Centric Programming or similar) framework, its capabilities regarding tool calls, and a shared GitHub repository for an MCP framework."
+    },
+    {
+      "id": "youtube-channel-recommendation",
+      "description": "Recommendation of a YouTube channel with positive feedback."
+    },
+    {
+      "id": "moonshot-and-kimi-ai-performance",
+      "description": "Discussion about Moonshot's implementation of Claude Code tools and positive experiences with Kimi AI for problem-solving, comparing it to Claude."
+    },
+    {
+      "id": "ruby-vs-scripting-languages-debate",
+      "description": "A lighthearted debate about programming languages, specifically Ruby versus C or Rust, with a user expressing a preference for scripting languages."
+    },
+    {
+      "id": "chatgpt-usage-statistics",
+      "description": "Sharing of statistics regarding the daily number of prompts sent by ChatGPT users."
+    },
+    {
+      "id": "ai-api-pricing-data-repository",
+      "description": "Inquiry about a repository that tracks the historical pricing of major AI providers' APIs for different models."
+    },
+    {
+      "id": "mem0-experience-and-vector-db-issues",
+      "description": "Discussion about a user's experience with 'mem0', including initial setup issues with the vector database and potential alternatives."
+    },
+    {
+      "id": "charmbracelet-opencode-alpha-discussion",
+      "description": "Discussion about 'crush', an early alpha opencode version of Charmbracelet, including how to access it and its relationship to the main opencode project."
+    },
+    {
+      "id": "upcoming-speaker-schedule-and-cancellations",
+      "description": "Discussion and management of an upcoming speaker schedule, including a cancellation of a talk."
+    },
+    {
+      "id": "goose-library-inquiry",
+      "description": "Inquiry about the 'goose' library and sharing of its documentation."
+    },
+    {
+      "id": "stargate-progress-update",
+      "description": "Sharing of a link related to 'stargate progress' from OpenAI."
+    },
+    {
+      "id": "openrouter-api-failure",
+      "description": "Report of an OpenRouter API failure to return a summary."
+    }
+  ]
+}
+```

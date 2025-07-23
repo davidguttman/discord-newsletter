@@ -1,0 +1,11 @@
+{
+  "run_name": "test-001",
+  "topic_evaluation": {
+    "coverage_score": 0.85,
+    "uniqueness_score": 0.75,
+    "relevance_score": 0.9,
+    "overall_score": 0.83,
+    "feedback": "To improve the topic extraction, consider consolidating similar topics to reduce overlap, especially in discussions about frameworks and tools. Additionally, ensure that all extracted topics are as specific as possible to enhance clarity and relevance."
+  },
+  "timestamp": "2025-07-23T13:07:48.111271"
+}
