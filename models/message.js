@@ -70,7 +70,49 @@ const messageSchema = new mongoose.Schema({
     title: String,
     description: String,
     url: String
-  }]
+  }],
+  
+  // Rich Discord data from raw API
+  messageType: String, // "DEFAULT", "REPLY", etc.
+  system: Boolean,
+  pinned: Boolean,
+  tts: Boolean,
+  flags: Number,
+  position: Number, // Position in thread
+  cleanContent: String, // Discord's cleaned content
+  
+  // Complete mention data
+  mentions: {
+    everyone: Boolean,
+    users: [String], // Array of user IDs
+    roles: [String], // Array of role IDs
+    repliedUser: String, // ID of replied user
+    channels: [String] // Array of channel IDs
+  },
+  
+  // Complete reference data for replies
+  reference: {
+    messageId: String,
+    channelId: String,
+    guildId: String,
+    type: String // "DEFAULT", etc.
+  },
+  
+  // Channel metadata
+  channelType: String, // "GUILD_TEXT", "GUILD_PUBLIC_THREAD", etc.
+  isThread: Boolean,
+  
+  // Raw Discord timestamps
+  createdTimestamp: Number,
+  editedTimestamp: Number,
+  
+  // Additional Discord fields that might be useful
+  webhookId: String,
+  applicationId: String,
+  nonce: String,
+  
+  // Store complete raw Discord data for future-proofing
+  rawDiscordData: mongoose.Schema.Types.Mixed
 }, {
   // timestamps: true // Removed as createdAt/updatedAt are handled explicitly
 })

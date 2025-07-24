@@ -105,55 +105,135 @@ async function seedChannelRange() {
     // Fetch messages from Discord
     console.log('\n📥 Fetching messages from Discord...')
     let fetchedMessages = []
-    let lastMessageId = null
-    let hasMore = true
-    let batchCount = 0
+    
+    // Function to fetch messages from a single channel
+    async function fetchMessagesFromChannel(channel, channelName) {
+      console.log(`\n📥 Fetching messages from ${channelName}...`)
+      let channelMessages = []
+      let lastMessageId = null
+      let hasMore = true
+      let batchCount = 0
 
-    while (hasMore) {
-      const fetchOptions = {
-        limit: 100
+      while (hasMore) {
+        const fetchOptions = {
+          limit: 100
+        }
+
+        if (lastMessageId) {
+          fetchOptions.before = lastMessageId
+        }
+
+        batchCount++
+        console.log(`    📦 Fetching batch ${batchCount} from ${channelName}...`)
+        
+        const messages = await channel.messages.fetch(fetchOptions)
+
+        if (messages.size === 0) {
+          console.log(`    ✅ No more messages found in ${channelName}`)
+          hasMore = false
+          break
+        }
+
+        // Filter messages within our time range
+        const relevantMessages = messages.filter(msg => {
+          const msgDate = new Date(msg.createdTimestamp)
+          return msgDate >= startDate && msgDate <= endDate
+        })
+
+        const newMessages = Array.from(relevantMessages.values())
+        channelMessages = channelMessages.concat(newMessages)
+        
+        console.log(`    📝 Found ${newMessages.length} messages in date range (${messages.size} total in batch)`)
+
+        // Check if we've gone past our start date
+        const oldestMessage = messages.last()
+        if (oldestMessage && new Date(oldestMessage.createdTimestamp) < startDate) {
+          console.log(`    ✅ Reached messages older than start date in ${channelName}`)
+          hasMore = false
+        } else if (messages.size < 100) {
+          console.log(`    ✅ Reached end of ${channelName} history`)
+          hasMore = false
+        } else {
+          lastMessageId = oldestMessage.id
+        }
+
+        // Rate limit between batch requests
+        await sleep(500) // 500ms between batches
       }
-
-      if (lastMessageId) {
-        fetchOptions.before = lastMessageId
-      }
-
-      batchCount++
-      console.log(`    📦 Fetching batch ${batchCount}...`)
       
-      const messages = await targetChannel.messages.fetch(fetchOptions)
-
-      if (messages.size === 0) {
-        console.log('    ✅ No more messages found')
-        hasMore = false
-        break
-      }
-
-      // Filter messages within our time range
-      const relevantMessages = messages.filter(msg => {
-        const msgDate = new Date(msg.createdTimestamp)
-        return msgDate >= startDate && msgDate <= endDate
+      return channelMessages
+    }
+    
+    // Fetch from main channel
+    const mainChannelMessages = await fetchMessagesFromChannel(targetChannel, `main channel #${targetChannel.name}`)
+    fetchedMessages = fetchedMessages.concat(mainChannelMessages)
+    
+    // Find and fetch from thread channels
+    console.log('\n🧵 Looking for thread channels...')
+    
+    // First check cached threads
+    const cachedThreadChannels = targetGuild.channels.cache.filter(channel => {
+      const isThread = channel.type === 10 || channel.type === 11 || channel.type === 12 // GUILD_NEWS_THREAD, GUILD_PUBLIC_THREAD, GUILD_PRIVATE_THREAD
+      return isThread && channel.parentId === channelId
+    })
+    
+    console.log(`📝 Found ${cachedThreadChannels.size} cached thread channels`)
+    
+    // Also fetch archived threads from the API
+    let allThreadChannels = new Map(cachedThreadChannels)
+    
+    try {
+      console.log('📥 Fetching active and archived threads from API...')
+      
+      // Fetch active threads
+      const activeThreads = await targetChannel.threads.fetchActive()
+      console.log(`📝 Found ${activeThreads.threads.size} active threads`)
+      activeThreads.threads.forEach((thread, id) => {
+        allThreadChannels.set(id, thread)
       })
-
-      const newMessages = Array.from(relevantMessages.values())
-      fetchedMessages = fetchedMessages.concat(newMessages)
       
-      console.log(`    📝 Found ${newMessages.length} messages in date range (${messages.size} total in batch)`)
-
-      // Check if we've gone past our start date
-      const oldestMessage = messages.last()
-      if (oldestMessage && new Date(oldestMessage.createdTimestamp) < startDate) {
-        console.log('    ✅ Reached messages older than start date, stopping')
-        hasMore = false
-      } else if (messages.size < 100) {
-        console.log('    ✅ Reached end of channel history')
-        hasMore = false
-      } else {
-        lastMessageId = oldestMessage.id
+      // Fetch archived threads
+      const archivedThreads = await targetChannel.threads.fetchArchived()
+      console.log(`📝 Found ${archivedThreads.threads.size} archived threads`)
+      archivedThreads.threads.forEach((thread, id) => {
+        allThreadChannels.set(id, thread)
+      })
+      
+      // Also fetch private archived threads if we have permission
+      try {
+        const privateArchivedThreads = await targetChannel.threads.fetchArchived({ type: 'private' })
+        console.log(`📝 Found ${privateArchivedThreads.threads.size} private archived threads`)
+        privateArchivedThreads.threads.forEach((thread, id) => {
+          allThreadChannels.set(id, thread)
+        })
+      } catch (privateError) {
+        console.log('⚠️  Could not fetch private archived threads (insufficient permissions)')
       }
-
-      // Rate limit between batch requests
-      await sleep(500) // 500ms between batches
+      
+    } catch (threadFetchError) {
+      console.error('❌ Error fetching threads from API:', threadFetchError.message)
+      console.log('📝 Will use only cached threads')
+    }
+    
+    console.log(`📝 Found ${allThreadChannels.size} total thread channels`)
+    
+    for (const [threadId, threadChannel] of allThreadChannels) {
+      try {
+        // Check bot permissions for thread
+        const threadPermissions = threadChannel.permissionsFor(botMember)
+        if (!threadPermissions || !threadPermissions.has('VIEW_CHANNEL') || !threadPermissions.has('READ_MESSAGE_HISTORY')) {
+          console.log(`    ⚠️  Skipping thread "${threadChannel.name}" - insufficient permissions`)
+          continue
+        }
+        
+        const threadMessages = await fetchMessagesFromChannel(threadChannel, `thread "${threadChannel.name}"`)
+        fetchedMessages = fetchedMessages.concat(threadMessages)
+        
+        // Rate limit between threads
+        await sleep(1000)
+      } catch (threadError) {
+        console.error(`    ❌ Error fetching from thread "${threadChannel.name}":`, threadError.message)
+      }
     }
 
     console.log(`\n📊 Found ${fetchedMessages.length} total messages in date range`)
@@ -180,14 +260,25 @@ async function seedChannelRange() {
           continue // Skip if already exists
         }
 
-        // Create message document
+        // Determine channel info based on whether this is a thread message
+        const isInThread = discordMsg.channel.type === 10 || discordMsg.channel.type === 11 || discordMsg.channel.type === 12
+        
+        
+        // For thread messages, we want to:
+        // 1. Store them with the parent channel ID (for querying purposes)
+        // 2. Set threadId to the thread channel ID (which equals the starter message ID)
+        const actualChannelId = isInThread ? discordMsg.channel.parentId : discordMsg.channel.id
+        const actualChannelName = isInThread ? targetChannel.name : discordMsg.channel.name
+        
+        // Create message document with complete Discord data
         const messageDoc = new Message({
+          // Basic fields (keeping existing structure)
           id: discordMsg.id,
-          content: discordMsg.content || '', // Default to empty string if no content
+          content: discordMsg.content || '',
           authorId: discordMsg.author.id,
           authorUsername: discordMsg.author.username,
-          channelId,
-          channelName: targetChannel.name,
+          channelId: actualChannelId,
+          channelName: actualChannelName,
           guildId: targetGuild.id,
           guildName: targetGuild.name,
           createdAt: new Date(discordMsg.createdTimestamp),
@@ -199,16 +290,59 @@ async function seedChannelRange() {
             size: att.size
           })),
           embeds: discordMsg.embeds.map(embed => ({
-            type: embed.type || 'rich', // Default embed type
+            type: embed.type || 'rich',
             title: embed.title,
             description: embed.description,
             url: embed.url
           })),
+          
           // Thread and reply support
-          threadId: discordMsg.thread?.id || null,
-          parentId: discordMsg.channel?.parent?.id || null,
+          threadId: isInThread ? discordMsg.channel.id : (discordMsg.thread?.id || null),
+          parentId: isInThread ? discordMsg.channel.parentId : (discordMsg.channel?.parent?.id || null),
           replyToId: discordMsg.reference?.messageId || null,
-          mentionsReplyTarget: !!discordMsg.reference
+          mentionsReplyTarget: !!discordMsg.reference,
+          
+          // Rich Discord data
+          messageType: discordMsg.type,
+          system: discordMsg.system,
+          pinned: discordMsg.pinned,
+          tts: discordMsg.tts,
+          flags: discordMsg.flags,
+          position: discordMsg.position,
+          cleanContent: discordMsg.cleanContent,
+          
+          // Complete mention data
+          mentions: {
+            everyone: discordMsg.mentions.everyone,
+            users: Array.from(discordMsg.mentions.users.keys()),
+            roles: Array.from(discordMsg.mentions.roles.keys()),
+            repliedUser: discordMsg.mentions.repliedUser?.id || null,
+            channels: Array.from(discordMsg.mentions.channels.keys())
+          },
+          
+          // Complete reference data
+          reference: discordMsg.reference ? {
+            messageId: discordMsg.reference.messageId,
+            channelId: discordMsg.reference.channelId,
+            guildId: discordMsg.reference.guildId,
+            type: discordMsg.reference.type
+          } : null,
+          
+          // Channel metadata
+          channelType: discordMsg.channel.type,
+          isThread: isInThread,
+          
+          // Raw Discord timestamps
+          createdTimestamp: discordMsg.createdTimestamp,
+          editedTimestamp: discordMsg.editedTimestamp,
+          
+          // Additional Discord fields
+          webhookId: discordMsg.webhookId,
+          applicationId: discordMsg.applicationId,
+          nonce: discordMsg.nonce,
+          
+          // Store complete raw Discord data for future-proofing
+          rawDiscordData: discordMsg.toJSON()
         })
 
         await messageDoc.save()
