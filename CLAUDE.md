@@ -25,10 +25,21 @@ npm run archive                # Run archive-messages script
 
 This is a Discord newsletter service that fetches messages, summarizes them with AI, and sends email summaries. The architecture uses environment-based dependency injection for testing and production flexibility.
 
+### BrainyFlow Integration
+
+The service now supports BrainyFlow for modular, node-based AI processing workflows:
+- **Feature Flag**: `USE_BRAINYFLOW=true` enables BrainyFlow (default: false)
+- **Backward Compatibility**: Falls back to original OpenAI implementation when disabled
+- **Monitoring**: `/brainyflow-status` endpoint provides metrics and health checks
+
 ### Core Libraries (`lib/`)
 - **Discord**: Environment-aware Discord client (`lib/discord/index.js` switches between real and mock)
 - **MongoDB**: Environment-aware database (`lib/mongo/index.js` switches between real and in-memory)
-- **OpenAI**: AI summarization service
+- **OpenAI**: AI summarization service (legacy implementation)
+- **BrainyFlow**: Modular AI processing framework (`lib/brainyflow/`)
+  - **Nodes**: MessageFetch, TopicExtraction, SummaryGeneration, Formatting, EmailDelivery
+  - **Flows**: Simple, Newsletter, and Email processing workflows  
+  - **Monitoring**: Execution metrics and health tracking
 - **Email**: Mailgun email service
 - **Message Formatter**: Converts messages to different output formats (JSON, TXT)
 - **Auto Catch**: Express error handling wrapper
@@ -45,8 +56,10 @@ module.exports = process.env.NODE_ENV === 'test'
 ### API Structure (`api/`)
 - `GET /health` - Health check with MongoDB connection status
 - `GET /messages` - Fetch messages with pagination, filtering, and format options
-- `POST /summarize` - Generate AI summaries of stored messages
-- `POST /email-summary` - Send email summaries via Mailgun
+- `POST /summarize` - Generate AI summaries of stored messages (supports BrainyFlow)
+- `POST /email-summary` - Send email summaries via Mailgun (supports BrainyFlow)
+- `GET /brainyflow-status` - BrainyFlow metrics, health, and configuration
+- `POST /brainyflow-status/reset` - Reset BrainyFlow metrics (testing/debugging)
 
 All API routes support both JSON and TXT output formats via `?format=txt` query parameter.
 
@@ -72,6 +85,7 @@ Environment-based configuration in `config/index.js` with defaults and productio
 - MongoDB connection (with test environment using in-memory database)
 - Discord bot token and channel configuration
 - OpenAI API settings (model, max tokens)
+- **BrainyFlow settings** (USE_BRAINYFLOW, timeouts, retry counts, batch sizes)
 - Mailgun email configuration
 - Authentication server and whitelist
 

@@ -5,7 +5,7 @@ const discord = require('../lib/discord')
 const mongoose = require('../lib/mongo')
 const fs = require('fs')
 
-async function backfillRichMessages() {
+async function backfillRichMessages () {
   try {
     console.log('🌱 Starting rich messages backfill...')
     await mongoose.connection
@@ -56,11 +56,11 @@ async function backfillRichMessages() {
     const RichMessage = mongoose.model('RichMessage', richMessageSchema, 'rich_messages')
 
     const channelId = '1209303473263485011'
-    
+
     // Calculate 1 month ago
     const now = new Date()
     const oneMonthAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000))
-    
+
     console.log(`📅 Backfilling messages from last 30 days: ${oneMonthAgo.toISOString()} to ${now.toISOString()}`)
 
     console.log('\n🤖 Starting Discord client...')
@@ -71,7 +71,7 @@ async function backfillRichMessages() {
 
     let targetChannel = null
     let targetGuild = null
-    
+
     // Find the channel
     for (const guild of client.guilds.cache.values()) {
       const channel = guild.channels.cache.get(channelId)
@@ -95,7 +95,7 @@ async function backfillRichMessages() {
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
     // Function to fetch messages from a single channel
-    async function fetchMessagesFromChannel(channel, channelName) {
+    async function fetchMessagesFromChannel (channel, channelName) {
       console.log(`\n📥 Fetching messages from ${channelName}...`)
       let channelMessages = []
       let lastMessageId = null
@@ -110,7 +110,7 @@ async function backfillRichMessages() {
 
         batchCount++
         console.log(`    📦 Fetching batch ${batchCount} from ${channelName}...`)
-        
+
         const messages = await channel.messages.fetch(fetchOptions)
 
         if (messages.size === 0) {
@@ -127,7 +127,7 @@ async function backfillRichMessages() {
 
         const newMessages = Array.from(relevantMessages.values())
         channelMessages = channelMessages.concat(newMessages)
-        
+
         console.log(`    📝 Found ${newMessages.length} messages in date range (${messages.size} total in batch)`)
 
         // Check if we've gone past our start date
@@ -145,19 +145,19 @@ async function backfillRichMessages() {
         // Rate limit between batch requests
         await sleep(500)
       }
-      
+
       return channelMessages
     }
-    
+
     // 1. FETCH MAIN CHANNEL MESSAGES
     const mainChannelMessages = await fetchMessagesFromChannel(targetChannel, `main channel #${targetChannel.name}`)
     allMessages.push(...mainChannelMessages)
-    
+
     // 2. FETCH ALL THREADS AND THEIR MESSAGES
     console.log('\n🧵 Fetching all threads...')
     const activeThreads = await targetChannel.threads.fetchActive()
     const archivedThreads = await targetChannel.threads.fetchArchived()
-    
+
     const allThreads = new Map([...activeThreads.threads, ...archivedThreads.threads])
     console.log(`📝 Found ${allThreads.size} total threads`)
 
@@ -165,7 +165,7 @@ async function backfillRichMessages() {
       try {
         const threadMessages = await fetchMessagesFromChannel(threadChannel, `thread "${threadChannel.name}"`)
         allMessages.push(...threadMessages)
-        
+
         // Rate limit between threads
         await sleep(1000)
       } catch (error) {
@@ -185,7 +185,7 @@ async function backfillRichMessages() {
     let savedCount = 0
     let skippedCount = 0
     let errorCount = 0
-    
+
     for (const discordMsg of allMessages) {
       try {
         // Check if message already exists
@@ -226,13 +226,13 @@ async function backfillRichMessages() {
             description: embed.description,
             url: embed.url
           })),
-          
+
           // Thread and reply support
           threadId: isInThread ? discordMsg.channel.id : (discordMsg.thread?.id || null),
           parentId: isInThread ? discordMsg.channel.parentId : (discordMsg.channel?.parent?.id || null),
           replyToId: discordMsg.reference?.messageId || null,
           mentionsReplyTarget: !!discordMsg.reference,
-          
+
           // Rich Discord data
           messageType: discordMsg.type,
           system: discordMsg.system,
@@ -241,7 +241,7 @@ async function backfillRichMessages() {
           flags: discordMsg.flags,
           position: discordMsg.position,
           cleanContent: discordMsg.cleanContent,
-          
+
           // Complete mention data
           mentions: {
             everyone: discordMsg.mentions.everyone,
@@ -250,35 +250,37 @@ async function backfillRichMessages() {
             repliedUser: discordMsg.mentions.repliedUser?.id || null,
             channels: Array.from(discordMsg.mentions.channels.keys())
           },
-          
+
           // Complete reference data
-          reference: discordMsg.reference ? {
-            messageId: discordMsg.reference.messageId,
-            channelId: discordMsg.reference.channelId,
-            guildId: discordMsg.reference.guildId,
-            type: discordMsg.reference.type
-          } : null,
-          
+          reference: discordMsg.reference
+            ? {
+                messageId: discordMsg.reference.messageId,
+                channelId: discordMsg.reference.channelId,
+                guildId: discordMsg.reference.guildId,
+                type: discordMsg.reference.type
+              }
+            : null,
+
           // Channel metadata
           channelType: discordMsg.channel.type,
           isThread: isInThread,
-          
+
           // Raw Discord timestamps
           createdTimestamp: discordMsg.createdTimestamp,
           editedTimestamp: discordMsg.editedTimestamp,
-          
+
           // Additional Discord fields
           webhookId: discordMsg.webhookId,
           applicationId: discordMsg.applicationId,
           nonce: discordMsg.nonce,
-          
+
           // Store complete raw Discord data for future-proofing
           rawDiscordData: discordMsg.toJSON()
         })
 
         await richMessageDoc.save()
         savedCount++
-        
+
         if (savedCount % 100 === 0) {
           console.log(`    📝 Saved ${savedCount} messages so far...`)
         }
@@ -301,12 +303,11 @@ async function backfillRichMessages() {
     // Count thread vs main channel messages
     const threadMessageCount = await RichMessage.countDocuments({ threadId: { $ne: null } })
     const mainChannelMessageCount = await RichMessage.countDocuments({ threadId: null })
-    
+
     console.log('\n📈 Collection Statistics:')
     console.log(`- Total messages in rich_messages: ${savedCount}`)
     console.log(`- Main channel messages: ${mainChannelMessageCount}`)
     console.log(`- Thread messages: ${threadMessageCount}`)
-
   } catch (error) {
     console.error('❌ Fatal error during backfill:', error)
     process.exit(1)

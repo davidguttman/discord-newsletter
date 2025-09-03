@@ -1,0 +1,21 @@
+{
+  "content": "## Community Highlights\n*Additional noteworthy mentions from around the channel*\n\nIn a lively conversation, users explored potential resources for tracking historical API pricing. User zmaril initiated the inquiry, asking, “Does anyone know of a repo of open data that records the price of the API for major providers for each model over time?” This question led to valuable insights from zachmayer, who pointed out that “Lite LLM has it, you could maybe use git history to get changes over time,” suggesting a proactive approach to data visibility. \n\nThe enthusiasm surrounding personal documentation was underscored by user sarav1n, who prompted the discussion by querying, “What is the use case here? Is it personal docs and stuff?” This opened the floor for various responses, including zmaril’s emphasis on its critical role, stating, “Personal documentation is vital for tracking progress over time and maintaining a clear history of projects.”\n\nMeanwhile, user slono revealed their affinity for the alpha version of ‘Crush,’ saying, “I’m addicted to crush + kimi,” while sharing insightful experiences about the tool. When asked about how to access it, slono mentioned, “there’s a list you can signup for on their discord,” indicating an engaging community approach to new technology insights.\n\nAs discussions turned toward performance issues, slono expressed frustration with Kimi, stating, “kimi's been very stuck stuck stuck stuck stuck.” This sentiment was echoed by muzachomega, who added, “kimi's been very stuck stuck stuck stuck,” highlighting the challenges users face with tool responsiveness.\n\nLastly, the community demonstrated their commitment to maintaining clarity in scheduling speaker events. User foxbarrington prompted the AI In Action Bot for the speaker schedule, leading to the cancellation of a duplicate booking by slono, who remarked to the bot, “good bot, very nice bot.” \n\nThese discussions reflect the community's engagement in sharing knowledge, troubleshooting challenges, and collectively exploring the value of new tools and resources.",
+  "metadata": {
+    "model": "gpt-4o-mini",
+    "usage": {
+      "prompt_tokens": 7374,
+      "completion_tokens": 397,
+      "total_tokens": 7771,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    }
+  }
+}

@@ -7,6 +7,7 @@ const messagesRouter = require('./api/messages')
 const summarizeRouter = require('./api/summarize')
 const emailSummaryRouter = require('./api/email-summary')
 const settingsRouter = require('./api/settings')
+const brainyFlowStatusRouter = require('./api/brainyflow-status')
 const { router: guildsRouter, setDiscordClient } = require('./api/guilds')
 const { router: previewRouter, setDiscordClient: setPreviewDiscordClient } = require('./api/preview')
 const healthpoint = require('healthpoint')
@@ -45,6 +46,7 @@ async function setupDevServer () {
               req.path.startsWith('/summarize') ||
               req.path.startsWith('/email-summary') ||
               req.path.startsWith('/settings') ||
+              req.path.startsWith('/brainyflow-status') ||
               req.path.startsWith('/guilds') ||
               req.path.startsWith('/preview') ||
               req.path.startsWith('/health')) {
@@ -94,6 +96,7 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/summarize', mockAuth, summarizeRouter)
   app.use('/email-summary', mockAuth, emailSummaryRouter)
   app.use('/settings', mockAuth, settingsRouter)
+  app.use('/brainyflow-status', mockAuth, brainyFlowStatusRouter)
   app.use('/guilds', mockAuth, guildsRouter)
   app.use('/preview', mockAuth, previewRouter)
 } else {
@@ -101,6 +104,7 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/summarize', summarizeRouter)
   app.use('/email-summary', emailSummaryRouter)
   app.use('/settings', settingsRouter)
+  app.use('/brainyflow-status', brainyFlowStatusRouter)
   app.use('/guilds', guildsRouter)
   app.use('/preview', previewRouter)
 }

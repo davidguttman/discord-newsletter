@@ -1,0 +1,41 @@
+{
+  "links": [
+    {
+      "url": "https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4",
+      "description": "YouTube channel discussing user experiences and insights relevant to the framework and tools in conversation.",
+      "associated_story": "Users Dive Into Claude Desktop and Associated Frameworks",
+      "confidence": "high"
+    },
+    {
+      "url": "https://github.com/maybe-finance/maybe",
+      "description": "GitHub repository for Maybe Finance, shared as a resource for Ruby programming and integrations with Claude tools.",
+      "associated_story": "Users Dive Into Claude Desktop and Associated Frameworks",
+      "confidence": "high"
+    },
+    {
+      "url": "https://x.com/freddie_v4/status/1947692034665644136",
+      "description": "Twitter link to a specific tweet, details not provided in the discussion.",
+      "associated_story": "none",
+      "confidence": "medium"
+    }
+  ],
+  "metadata": {
+    "model": "gpt-4o-mini",
+    "usage": {
+      "prompt_tokens": 5380,
+      "completion_tokens": 217,
+      "total_tokens": 5597,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "audio_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "audio_tokens": 0,
+        "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0
+      }
+    },
+    "raw_response": "```json\n[\n  {\n    \"url\": \"https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4\",\n    \"description\": \"YouTube channel discussing user experiences and insights relevant to the framework and tools in conversation.\",\n    \"associated_story\": \"Users Dive Into Claude Desktop and Associated Frameworks\",\n    \"confidence\": \"high\"\n  },\n  {\n    \"url\": \"https://github.com/maybe-finance/maybe\",\n    \"description\": \"GitHub repository for Maybe Finance, shared as a resource for Ruby programming and integrations with Claude tools.\",\n    \"associated_story\": \"Users Dive Into Claude Desktop and Associated Frameworks\",\n    \"confidence\": \"high\"\n  },\n  {\n    \"url\": \"https://x.com/freddie_v4/status/1947692034665644136\",\n    \"description\": \"Twitter link to a specific tweet, details not provided in the discussion.\",\n    \"associated_story\": \"none\",\n    \"confidence\": \"medium\"\n  }\n]\n```"
+  }
+}

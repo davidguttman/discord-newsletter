@@ -1,0 +1,278 @@
+```json
+{
+  "topic_groups": {
+    "AI Model and Framework Discussion (MCP, Claude, Kimi)": [
+      {
+        "id": "msg_1",
+        "timestamp": "[7/21/2025, 4:25:56 PM]",
+        "username": "spj1996",
+        "content": "When Vectors Break Down: Graph-Based RAG..."
+      },
+      {
+        "id": "msg_2",
+        "timestamp": "[7/21/2025, 4:25:58 PM]",
+        "username": "dr.spaceman",
+        "content": "What’s the current flow you're aiming for?"
+      },
+      {
+        "id": "msg_3",
+        "timestamp": "[7/21/2025, 5:02:48 PM]",
+        "username": "mittens4025",
+        "content": "MCP doesn't care how long running your tool calls are. The frameworks usually do."
+      },
+      {
+        "id": "msg_4",
+        "timestamp": "[7/21/2025, 5:08:04 PM]",
+        "username": "ngamolsky9602",
+        "content": "When you say frameworks what do you mean? Im wondering specifically about Claude Desktop as a client."
+      },
+      {
+        "id": "msg_5",
+        "timestamp": "[7/21/2025, 5:38:59 PM]",
+        "username": "mittens4025",
+        "content": "By framework, I was thinking of claude code and agent frameworks/sdks that run the selected tools automatically for you in a loop.\n\nHmm, lots of clients might care as well actually. I was thinking of mcp usage as decoupling the tool selection and the tool execution."
+      },
+      {
+        "id": "msg_6",
+        "timestamp": "[7/21/2025, 7:28:33 PM]",
+        "username": "xr0am",
+        "content": "I prefer this framework personally, that sits on top of it and improves upon it, that is how I built my MCP:\n\n https://github.com/QuantGeekDev/mcp-framework"
+      },
+      {
+        "id": "msg_7",
+        "timestamp": "[7/22/2025, 12:14:34 AM]",
+        "username": "0xgrrr",
+        "content": "What's very interesting is that Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint (e.g., WebSearch --> Chinese engine). I don't know any other providers who've gone to this length, so it's a breeze to use as a replacement for Sonnet."
+      },
+      {
+        "id": "msg_8",
+        "timestamp": "[7/22/2025, 1:12:54 AM]",
+        "username": "xr0am",
+        "content": "Kimi is underrated imo, I use daily now. Yesterday it one-shotted the answer to an issue I had deploying mem0 on my NAS, where claude struggled for 3 hours back and forth of testing configs"
+      },
+      {
+        "id": "msg_9",
+        "timestamp": "[7/22/2025, 5:43:42 AM]",
+        "username": "slono",
+        "content": "i'm addicted to crush + kimi"
+      },
+      {
+        "id": "msg_10",
+        "timestamp": "[7/22/2025, 6:14:20 AM]",
+        "username": "zachmayer",
+        "content": "Whats crush?"
+      },
+      {
+        "id": "msg_11",
+        "timestamp": "[7/22/2025, 6:15:02 AM]",
+        "username": "slono",
+        "content": "charmbracelet's early alpha opencode version"
+      },
+      {
+        "id": "msg_12",
+        "timestamp": "[7/22/2025, 6:27:54 AM]",
+        "username": "kylemathews",
+        "content": "How do you get it?"
+      },
+      {
+        "id": "msg_13",
+        "timestamp": "[7/22/2025, 6:29:36 AM]",
+        "username": "slono",
+        "content": "there's a list you can signup for on their discord, i've been a contributor to charm stuff over the years, maybe that helped me get in. I know <@364753007021260800> is in ther eas well"
+      },
+      {
+        "id": "msg_14",
+        "timestamp": "[7/22/2025, 7:49:50 AM]",
+        "username": "mokhtar",
+        "content": "How does it differ from the actual opencode ?"
+      },
+      {
+        "id": "msg_15",
+        "timestamp": "[7/22/2025, 8:02:47 AM]",
+        "username": "slono",
+        "content": "it's pretty 🤣"
+      },
+      {
+        "id": "msg_16",
+        "timestamp": "[7/22/2025, 8:03:18 AM]",
+        "username": "slono",
+        "content": "and the whole vibes around the opencode beef from the \"opensource\" side kinda turned me off"
+      },
+      {
+        "id": "msg_17",
+        "timestamp": "[7/22/2025, 7:12:34 AM]",
+        "username": "muzachomega",
+        "content": "kimi's been very stuck stuck stuck stuck"
+      }
+    ],
+    "Tool Call Timeouts and Client Behavior": [
+      {
+        "id": "msg_18",
+        "timestamp": "[7/21/2025, 7:32:27 PM]",
+        "username": "xr0am",
+        "content": "Claude desktop and cursor have default non configurable timeout at 60sec.\nCline and n8n have configurable timeout options, librechat as well.\nBest way if you insist on Claude desktop is you offload to background job and return a task ID + have a polling tool"
+      }
+    ],
+    "Industry News and Events": [
+      {
+        "id": "msg_19",
+        "timestamp": "[7/21/2025, 5:16:38 PM]",
+        "username": "swyxio",
+        "content": "humanloop shutting down - no tweets or blogposts, just email to custs https://news.ycombinator.com/item?id=44592216"
+      },
+      {
+        "id": "msg_20",
+        "timestamp": "[7/21/2025, 6:36:31 PM]",
+        "username": "muzachomega",
+        "content": "🧵"
+      },
+      {
+        "id": "msg_21",
+        "timestamp": "[7/21/2025, 8:13:03 PM]",
+        "username": "swyxio",
+        "content": "https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4 hearing good things about this channel"
+      },
+      {
+        "id": "msg_22",
+        "timestamp": "[7/22/2025, 12:44:10 AM]",
+        "username": "mdcker",
+        "content": "> ChatGPT users send 2.5 billion prompts a day\n>\n> About 330 million of those are coming from users in the U.S.\nhttps://techcrunch.com/2025/07/21/chatgpt-users-send-2-5-billion-prompts-a-day"
+      },
+      {
+        "id": "msg_23",
+        "timestamp": "[7/22/2025, 6:37:55 AM]",
+        "username": "foxbarrington",
+        "content": "<@1362840252938719353> what’s the schedule"
+      },
+      {
+        "id": "msg_24",
+        "timestamp": "[7/22/2025, 6:37:56 AM]",
+        "username": "AI In Action Bot",
+        "content": "**Upcoming Speakers (Next 5):**\n- Friday, July 25, 2025: @ninjaa2377 - \"Using Claude Code in a Cloud VM for 24/7 automation of marketing tasks and personal CRM tasks\"\n- Friday, August 1, 2025: @slono - \"learning and building with deep research and manus\"\n- Friday, August 8, 2025: @scottwerner - \"Doc based vibe coding systems\""
+      },
+      {
+        "id": "msg_25",
+        "timestamp": "[7/22/2025, 6:42:01 AM]",
+        "username": "muzachomega",
+        "content": "I think that <@363877777977376768> booking is an accidental dupe from last week"
+      },
+      {
+        "id": "msg_26",
+        "timestamp": "[7/22/2025, 6:44:12 AM]",
+        "username": "slono",
+        "content": "yeah it's dupe"
+      },
+      {
+        "id": "msg_27",
+        "timestamp": "[7/22/2025, 6:44:24 AM]",
+        "username": "slono",
+        "content": "<@1362840252938719353> cancel my talk on august 1"
+      },
+      {
+        "id": "msg_28",
+        "timestamp": "[7/22/2025, 6:44:25 AM]",
+        "username": "AI In Action Bot",
+        "content": "Okay, I have cancelled your talk \"learning and building with deep research and manus\" scheduled for Friday, August 1, 2025."
+      },
+      {
+        "id": "msg_29",
+        "timestamp": "[7/22/2025, 6:44:42 AM]",
+        "username": "slono",
+        "content": "good bot, very nice bot"
+      },
+      {
+        "id": "msg_30",
+        "timestamp": "[7/22/2025, 8:46:49 AM]",
+        "username": "swyxio",
+        "content": "stargate progress https://x.com/OpenAI/status/1947628731142648113"
+      },
+      {
+        "id": "msg_31",
+        "timestamp": "[7/22/2025, 8:46:49 AM]",
+        "username": "Red - X-Ware.v0",
+        "content": ""
+      },
+      {
+        "id": "msg_32",
+        "timestamp": "[7/22/2025, 8:46:49 AM]",
+        "username": "Red - X-Ware.v0",
+        "content": ""
+      },
+      {
+        "id": "msg_33",
+        "timestamp": "[7/22/2025, 8:46:49 AM]",
+        "username": "Red - X-Ware.v0",
+        "content": "https://xcancel.com/OpenAI/status/1947628731142648113"
+      },
+      {
+        "id": "msg_34",
+        "timestamp": "[7/22/2025, 8:47:06 AM]",
+        "username": "Red - X-Ware.v0",
+        "content": "OpenRouter API failed to return a summary."
+      }
+    ],
+    "Programming Language and Project Discussion (Ruby, Rust, C)": [
+      {
+        "id": "msg_35",
+        "timestamp": "[7/21/2025, 11:08:03 PM]",
+        "username": "youngphlo",
+        "content": "https://github.com/maybe-finance/maybe for <@286141792670318603> the only Ruby pilled person i know"
+      },
+      {
+        "id": "msg_36",
+        "timestamp": "[7/22/2025, 12:14:02 AM]",
+        "username": "yikesawjeez",
+        "content": "im not rubypilled but i hope to be when i grow up (the ancient wizards tell me to do C or Rust instead of picking Yet Another Scripting Language, but i am a script kiddie at heart)"
+      }
+    ],
+    "API Pricing and Data Repositories": [
+      {
+        "id": "msg_37",
+        "timestamp": "[7/22/2025, 1:11:08 AM]",
+        "username": "zmaril",
+        "content": "Does anyone know of a repo of open data that records the price of the api for major providers for each model over time?"
+      },
+      {
+        "id": "msg_38",
+        "timestamp": "[7/22/2025, 3:43:25 AM]",
+        "username": "zachmayer",
+        "content": "Lite LLM has it, you could maybe use git history to get changes over time"
+      },
+      {
+        "id": "msg_39",
+        "timestamp": "[7/22/2025, 4:32:54 AM]",
+        "username": "zachmayer",
+        "content": "Cost history via LiteLLM"
+      }
+    ],
+    "Project Experience and Technical Issues (mem0, Vector DB)": [
+      {
+        "id": "msg_40",
+        "timestamp": "[7/21/2025, 1:51:17 AM]",
+        "username": "mdcker",
+        "content": "<@670165773465026580> I'd like to hear about more about your experiences with mem0 \nLet me know whether you found it useful after some prolonged usage"
+      },
+      {
+        "id": "msg_41",
+        "timestamp": "[7/22/2025, 2:03:40 AM]",
+        "username": "xr0am",
+        "content": "Sure will update here"
+      },
+      {
+        "id": "msg_42",
+        "timestamp": "[7/22/2025, 2:04:04 AM]",
+        "username": "xr0am",
+        "content": "For now just got it barely working, still having some issues with the vector DB. Worst case will do supabase"
+      }
+    ],
+    "New Tools and Libraries (Goose)": [
+      {
+        "id": "msg_43",
+        "timestamp": "[7/22/2025, 7:52:37 AM]",
+        "username": "thenoahhein",
+        "content": "anyone here used goose? https://block.github.io/goose/docs/quickstart"
+      }
+    ]
+  }
+}
+```

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "zen": {
+      "command": "/home/dguttman/dev/zen-mcp/zen-mcp.sh",
+      "env": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin"
+      }
+    }
+  }
+}

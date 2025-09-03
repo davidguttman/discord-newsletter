@@ -1,0 +1,238 @@
+# Codebase Map: Discord Newsletter Service
+
+This document provides a comprehensive, hierarchical map of the Discord Newsletter codebase, designed to rapidly onboard a new developer.
+
+## 1. High-Level Architecture Overview
+
+The application is a **Monolithic Node.js service with a lightweight vanilla JavaScript Single-Page Application (SPA)** for the frontend. Its primary purpose is to archive Discord messages, use an AI model (OpenAI) to generate summaries of channel activity, and send these summaries as email newsletters.
+
+### Technology Stacks
+
+*   **Backend**:
+    *   **Framework**: Express.js
+    *   **Database**: MongoDB with Mongoose ODM
+    *   **AI/LLM**: `openai` Node.js library.
+    *   **Email**: `mailgun-js`
+    *   **Authentication**: `authentic-service` (for production)
+    *   **Testing**: Tape, Supertest
+
+*   **Frontend**:
+    *   **Framework**: None (Vanilla JS)
+    *   **Templating**: `nanohtml`
+    *   **Styling**: `tachyons`
+    *   **Dev Server**: `budo`
+
+*   **AI Workflow Engine**:
+    *   A custom or in-house framework named **BrainyFlow** (`lib/brainyflow`) is being integrated. This is a significant architectural component designed to create modular, node-based AI processing pipelines.
+
+### Core Architectural Patterns
+
+*   **Environment-Based Dependency Injection**: This is the most crucial architectural pattern for a new developer to understand. The codebase uses `process.env.NODE_ENV === 'test'` to conditionally require different module implementations. For services like database (`lib/mongo`), Discord client (`lib/discord`), OpenAI (`lib/openai`), and email (`lib/email`), there is an `index.js` file that acts as a switch, loading a real implementation for production and a mock version (e.g., `service-test.js`) for the test environment. This pattern allows for isolated and predictable unit/integration tests without actual network calls or database writes.
+
+*   **Feature Flag for Phased Rollout**: The new **BrainyFlow** AI processing system is being introduced via a feature flag (`USE_BRAINYFLOW`). The `lib/brainyflow/monitoring.js` and `lib/brainyflow/brainyflow.js` files contain logic (`shouldUseBrainyFlow`) to decide whether to use the new pipeline or fall back to the legacy OpenAI implementation. This enables gradual rollout and A/B testing.
+
+*   **Pipeline Pattern (BrainyFlow)**: The BrainyFlow system implements the Pipeline pattern. It decomposes the complex task of generating a newsletter into a sequence of independent, reusable components called "Nodes" (e.g., `MessageFetchNode`, `TopicExtractionNode`, `SummaryGenerationNode`, `NewsletterFormatterNode`). These nodes are chained together in `lib/brainyflow/flows.js` to create specific processing pipelines (e.g., `runNewsletterFlow`, `runEmailFlow`). This makes the AI logic more modular, testable, and easier to modify.
+
+*   **Model-View-Controller (MVC) - loosely applied**:
+    *   **Models**: `models/*.js` define the data schema (Mongoose).
+    *   **Views**: `client/*.js` files (using `nanohtml`) are responsible for the presentation layer.
+    *   **Controllers**: `api/*.js` files act as controllers, handling incoming HTTP requests, interacting with the models, and sending responses.
+
+## 2. Detailed Directory & File Analysis
+
+This is a hierarchical breakdown of the repository's files and directories.
+
+*   **`./` (Root)**
+    *   `server.js`: **[CRITICAL]** The main entry point of the application.
+        *   **WHAT**: Initializes the Express server, sets up middleware, mounts API routes, and starts the Budo development server for the frontend. It also handles graceful shutdown.
+        *   **WHY**: This file orchestrates all backend components, acting as the central nervous system. It connects the API endpoints to the server, integrates the frontend dev server, and establishes top-level error handling.
+        *   **Key Sections**:
+            *   `setupDevServer()`: Conditionally starts the `budo` live-reloading server for the client-side code and proxies requests to it. In production, it serves static files.
+            *   `app.use(...)`: Mounts middleware (JSON parsing) and the various API routers (`messages`, `summarize`, etc.).
+            *   Health Check: Sets up the `/health` endpoint using `healthpoint`.
+            *   Environment-specific Routes: Uses an `if (process.env.NODE_ENV === 'test')` block to apply mock authentication middleware for tests.
+            *   Error Handling: A final middleware function catches and formats all errors.
+    *   `docker-compose.yml`: Defines the `mongodb` service for local development.
+    *   `.env.example`: Template for required environment variables.
+    *   `.env.test`: Environment variables specifically for the test suite.
+    *   `README.md`: Project overview, setup, and usage instructions.
+
+*   **`api/`**: Contains all API route handlers (the "controllers").
+    *   `brainyflow-status.js`: Provides endpoints to monitor the health and metrics of the BrainyFlow engine.
+    *   `email-summary.js`: Defines the API endpoint for triggering an email summary. It orchestrates fetching messages, generating a summary, and sending the email.
+    *   `guilds.js`: API endpoints for fetching Discord guilds and their channels.
+    *   `messages.js`: API endpoints for querying stored Discord messages from MongoDB with filtering and pagination. Supports both JSON and TXT output.
+    *   `preview.js`: API endpoint to fetch live, unstored messages directly from Discord for a channel preview.
+    *   `settings.js`: CRUD endpoints for managing which Discord channels the service should actively monitor and collect messages from.
+    *   `summarize.js`: **[CRITICAL]** Defines the API endpoints for checking and generating message summaries.
+        *   **WHAT**: Handles `GET /summarize` to check for cached summaries and `POST /summarize` to trigger a new summary generation.
+        *   **WHY**: This is the core endpoint for the application's main feature. It acts as the gateway to the AI summarization logic, determines whether to use a cached result, and orchestrates the call to the underlying AI service (`openai` or `brainyflow`).
+        *   **Key Functions**:
+            *   `GET /`: Checks the `Summary` collection for a recently generated summary for the given channel/timespan. If none exists, it returns the total message count. This prevents redundant, expensive AI calls.
+            *   `POST /`: Fetches messages from the DB, formats them, and calls `openai.summarizeMessages()` to generate a new summary, which is then saved to the `Summary` collection.
+
+*   **`client/`**: Frontend single-page application code.
+    *   `index.js`: The entry point for the frontend. It sets up a client-side router (`http-hash`) to render different views.
+    *   `state.js`: A simple event emitter for managing client-side state.
+    *   `welcome.js`, `guilds.js`, `channels.js`, `settings.js`: These are the "views" or "pages" of the application, rendered using `nanohtml`.
+    *   `channel-detail.js`: **[CRITICAL UI COMPONENT]** The most important view.
+        *   **WHAT**: Renders the page for a specific channel, showing its stored messages and summary. Contains the UI logic for toggling message collection and triggering new summary generation via API calls.
+        *   **WHY**: This is the primary user-facing interface for interacting with the service's core features for a given channel.
+    *   `style/`: Contains CSS files (`tachyons.js`, `loaders.js`) injected into the client.
+
+*   **`config/`**
+    *   `index.js`: **[CRITICAL]** Centralized configuration loader.
+        *   **WHAT**: Loads environment variables from `.env` using `dotenv`, provides default values, and exports a single configuration object for the entire application.
+        *   **WHY**: This file decouples configuration from the application code, allowing behavior to be changed across different environments (dev, test, prod) without code modification. It's a single source of truth for all configurable settings.
+
+*   **`docs/`**: Documentation and historical notes.
+    *   `01-how-to-add-summarize-routes.md`: Tutorial on adding the initial summarization feature.
+    *   `02-how-to-add-email.md`: Tutorial on adding the email sending feature.
+    *   `03-how-to-add-messages-txt-output.md`: Tutorial on refactoring the message formatter.
+    *   `04-explaining-rewrite-changes.md`: High-level explanation of the project's evolution.
+    *   `brainyflow-migration-plan.md`, `brainyflow.md`, `core_abstraction/`, `design_pattern/`, `guides/`: A comprehensive set of documents explaining the **BrainyFlow framework**, its concepts (Node, Flow, Memory), and how to use it. This indicates BrainyFlow is a very significant component.
+
+*   **`evaluation-history/` & `workflow-runs/`**: These directories contain artifacts from running and evaluating the newspaper/summary generation pipeline. This includes sample messages, prompts used, raw AI output, and final reports. They are invaluable for understanding and debugging the AI's behavior.
+
+*   **`lib/`**: Core application logic and wrappers around external services.
+    *   **`brainyflow/`**: **[SUBSYSTEM]** A modular AI workflow engine. This is a core component and represents a shift away from simple, direct OpenAI calls.
+        *   `index.js`: **[CRITICAL]** Environment-aware switch for BrainyFlow. Uses `process.env.NODE_ENV` to load `brainyflow-test.js` during tests.
+        *   `brainyflow.js`: **[CRITICAL]** The production orchestrator. It wraps flow executions, records metrics via `monitoring.js`, and handles the feature flag logic to decide whether to use BrainyFlow or the legacy `openai.js` implementation.
+        *   `brainyflow-test.js`: Mock implementation for testing, delegating to `openai-test.js` to maintain compatibility with existing tests during the migration.
+        *   `flows.js`: **[CRITICAL]** Defines the application's core AI pipelines. It composes different `Nodes` into sequential workflows like `runSimpleFlow`, `runNewsletterFlow`, and `runEmailFlow`. This is where the main "business logic" of the AI processing resides.
+        *   `nodes/`: A directory of individual, single-responsibility processing units for the BrainyFlow pipelines.
+            *   `MessageFetchNode.js`: Fetches messages from MongoDB.
+            *   `TopicExtractionNode.js`: Uses an LLM to identify conversation topics.
+            *   `SummaryGenerationNode.js`: Generates stories for each topic.
+            *   `NewsletterFormatterNode.js`, `EmailFormatterNode.js`, `TextFormatterNode.js`: Format the output for different delivery channels.
+            *   `EmailDeliveryNode.js`: Sends the final email via Mailgun.
+        *   `monitoring.js`: Collects and exposes metrics for BrainyFlow executions (`/api/brainyflow-status`).
+        *   `utils.js`: Helper functions specific to the BrainyFlow implementation.
+    *   `discord/`: Wrapper for the Discord client. Follows the environment-switching pattern.
+    *   `email/`: Wrapper for the Mailgun email client. Follows the environment-switching pattern.
+    *   `mongo/`: Wrapper for the Mongoose DB connection. Follows the environment-switching pattern, using `mongodb-memory-server` for tests.
+    *   `openai/`: The legacy AI summarization service.
+        *   `index.js`: Environment-aware switch.
+        *   `openai.js`: Production implementation making direct calls to the OpenAI API for summarization.
+        *   `openai-test.js`: Mock implementation for tests.
+        *   `newspaper-prompts.js`: Stores the large, multi-step prompts for generating the newspaper-style summaries. These are critical to the AI's output quality.
+    *   `auto-catch.js`: A utility to wrap async Express route handlers to automatically catch and forward errors.
+    *   `message-formatter.js`: A centralized module for formatting arrays of message objects into a readable plain text format for AI prompts or user display.
+
+*   **`middleware/`**: Express middleware.
+    *   `auth.js` / `auth-test.js`: Authentication logic. The `index.js` file uses the environment-switching pattern to apply mock auth during tests.
+
+*   **`models/`**: Mongoose schemas defining the structure of data in MongoDB.
+    *   `message.js`: Defines the schema for a stored Discord message, including content, author, attachments, and reply/thread metadata.
+    *   `settings.js`: Defines the schema for channels to be collected.
+    *   `summary.js`: Defines the schema for a generated summary, caching the result along with usage stats and metadata.
+
+*   **`scripts/`**: Standalone scripts for various tasks.
+    *   `archive-messages.js`: A script to manually archive messages for a specific channel and date range.
+    *   `backfill-rich-messages.js`: Script to populate the `rich_messages` collection, likely an enhanced version of the `messages` collection.
+    *   `conversation-map-3days.js`: A diagnostic script to analyze and display conversation threads from the last 3 days.
+    *   `rate-summary.js`: A script to collect and rate the quality of generated summaries, likely used for evaluation and prompt engineering.
+    *   `send-daily-summary.js`: An example script to trigger the daily summary email, intended to be run by a cron job.
+
+*   **`story-optimizer/`**: A separate Python-based project using `dspy-ai` to evaluate and optimize the prompts used for story generation. This is an advanced feature for improving the quality of the AI output.
+
+*   **`test/`**: Contains all automated tests.
+    *   `index.js`: The main test runner that finds and executes all `*.test.js` files.
+    *   `api/`, `brainyflow/`, `discord/`, `models/`: Subdirectories with tests for their corresponding application parts.
+    *   `helpers/`: Test helpers, including `mock-auth.js`.
+
+## 3. Key Data Flow Analysis
+
+The primary user story is **Generating and emailing a daily channel summary**. This flow demonstrates the full pipeline from data fetching to AI processing and final delivery.
+
+Here is a step-by-step trace of this flow, assuming the `USE_BRAINYFLOW` feature flag is enabled:
+
+1.  **Trigger**: A cron job or manual action executes the `scripts/send-daily-summary.js` script, or more directly, makes a `POST` request to `/email-summary/channel/:channelId` with a payload like `{ "to": "recipient@example.com", "since": "24h" }`.
+
+2.  **API Route (`api/email-summary.js`)**: The `POST /email-summary/channel/:channelId` route handler in `api/email-summary.js` receives the request. This file is now deprecated in favor of the BrainyFlow system, but the new flow is triggered from the `summarize` endpoint. The newer, BrainyFlow-driven path is via `/api/summarize`. Let's trace the full email flow via BrainyFlow.
+    *   **A more accurate starting point:** A request to generate an email summary now calls `runEmailFlow` from `lib/brainyflow/flows.js`. This is likely triggered by a newer, un-provided script or endpoint. For this analysis, we'll assume `runEmailFlow` is triggered with the necessary parameters (`guildId`, `channelId`, `since`, `emailOptions`).
+
+3.  **Flow Initialization (`lib/brainyflow/flows.js`)**: The `runEmailFlow` function is called.
+    *   It creates a `memory` object to hold state throughout the flow using `createDiscordMemory`.
+    *   It initializes and runs a sequence of nodes.
+
+4.  **`MessageFetchNode.js`**:
+    *   **prep**: Reads `guildId`, `channelId`, and `since` from `memory`. Calculates the start and end dates.
+    *   **exec**: Queries the MongoDB `messages` collection for all messages within the date range.
+    *   **post**: Stores the fetched `messages` array in `memory`. It then calls `formatMessagesForAI` to create a single `formattedMessages` string and stores that in `memory` as well.
+
+5.  **`TopicExtractionNode.js`**:
+    *   **prep**: Reads `formattedMessages` from `memory`.
+    *   **exec**: Sends the `formattedMessages` to the OpenAI API with a prompt to extract conversation topics.
+    *   **post**: Parses the JSON response from OpenAI and stores the list of `topics` in `memory`. It also handles JSON parsing errors and retries.
+
+6.  **`SummaryGenerationNode.js`**:
+    *   **prep**: Reads the `topics` and `formattedMessages` from `memory`.
+    *   **exec**: Loops through each *substantial* topic. For each one, it sends a request to the OpenAI API with a prompt to write a news story about that specific topic. It then generates a "catch-all" story for any remaining content.
+    *   **post**: Stores the generated `stories` and `catchallStory` into `memory`. It also aggregates all token `usage` data.
+
+7.  **`EmailFormatterNode.js`**:
+    *   **prep**: Reads the `summary` (assembled by `SummaryGenerationNode`), `startDate`, `endDate`, and `emailOptions` from `memory`.
+    *   **exec**: Generates an `emailSubject`. It also uses `marked` to convert the markdown summary into an HTML email body (`emailHtmlContent`) and creates a plain text version (`emailTextContent`).
+    *   **post**: Stores `emailSubject`, `emailHtmlContent`, `emailTextContent`, and the recipient `emailTo` address in `memory`.
+
+8.  **`EmailDeliveryNode.js`**:
+    *   **prep**: Reads `emailSubject`, `emailHtmlContent`, `emailTo`, etc. from `memory`.
+    *   **exec**: Uses the `lib/email/index.js` wrapper to send the formatted email via the Mailgun API.
+    *   **post**: Stores the `emailId` (from Mailgun's response) into `memory` and sets a `{ metadata: { emailDelivered: true } }` flag.
+
+9.  **Flow Completion (`lib/brainyflow/flows.js`)**: The `runEmailFlow` function completes. It returns a success object containing the `emailId`, `summary`, and `usage` statistics pulled from the final state of the `memory` object.
+
+## 4. Configuration and Environment Analysis
+
+The application is configured via environment variables, which are loaded by `dotenv` and processed in `config/index.js`. This file provides defaults, ensuring the app can run without a `.env` file for some basic functions.
+
+The `NODE_ENV` variable is critical. When set to `test`, it triggers the dependency injection pattern to load mock services for Discord, MongoDB, OpenAI, and Email, enabling isolated testing.
+
+### Configuration Variable Cross-Reference
+
+| Config Key | Example Value / Source | Consumed In | Purpose |
+| :--- | :--- | :--- | :--- |
+| `PORT` | `3000` (default: 3000) | `server.js` | The port the Express web server runs on. |
+| `MONGO_URI` | `mongodb://localhost:27017/` | `config/index.js`, `lib/mongo/mongo.js` | The connection string for the MongoDB database. |
+| `MONGO_DB_NAME` | `discord-newsletter` | `config/index.js`, `lib/mongo/mongo.js` | The name of the database to use within MongoDB. |
+| `NODE_ENV` | `test`, `development`, `production` | **Multiple files** (`server.js`, `lib/*/index.js`) | **Critical**. Switches between production and test configurations, especially for loading mock services. |
+| `OPENAI_API_KEY` | `sk-xxxxxxxxxx` | `config/index.js`, `lib/openai/openai.js` | **Required for Production**. API key for accessing the OpenAI service. |
+| `OPENAI_MODEL` | `gpt-4o-mini` | `config/index.js`, `lib/openai/openai.js` | The default OpenAI model to use for summarization. |
+| `MAILGUN_API_KEY`| `key-xxxxxxxxxx` | `config/index.js`, `lib/email/email.js` | **Required for Production**. API key for the Mailgun email service. |
+| `MAILGUN_DOMAIN` | `mg.example.com` | `config/index.js`, `lib/email/email.js` | **Required for Production**. The domain registered with Mailgun for sending emails. |
+| `USE_BRAINYFLOW` | `true` or `false` (default) | `config/index.js`, `lib/brainyflow/brainyflow.js` | A feature flag to enable the modular BrainyFlow AI pipeline instead of the legacy OpenAI service. |
+| `AUTHENTIC_SERVER` | `https://auth.example.com` | `config/index.js`, `middleware/auth.js` | URL for the authentication service used in production. |
+| `WHITELIST` | `a@b.com,c@d.com` | `config/index.js`, `middleware/auth.js` | A comma-separated list of email addresses authorized to use the service in production. |
+
+## 5. Architectural Visualization
+
+The most complex and non-obvious interaction is the **BrainyFlow Newsletter Generation Pipeline**. While the code in `lib/brainyflow/flows.js` shows a sequential execution, a diagram helps visualize how the `memory` object acts as a shared state bus between independent, modular nodes.
+
+This sequence diagram illustrates the `runNewsletterFlow` process.
+
+```mermaid
+sequenceDiagram
+    participant API as API Server
+    participant Flows as runNewsletterFlow
+    participant TopicNode as TopicExtractionNode
+    participant SummaryNode as SummaryGenerationNode
+    participant FormatNode as NewsletterFormatterNode
+    participant Memory as Shared Memory
+
+    API->>Flows: Trigger Newsletter Generation(formattedMessages)
+    Flows->>Memory: createDiscordMemory(options)
+    Flows->>TopicNode: Execute(memory)
+    TopicNode->>Memory: Reads formattedMessages
+    Note right of TopicNode: Calls OpenAI to get topics
+    TopicNode->>Memory: Writes extracted 'topics'
+    Flows->>SummaryNode: Execute(memory)
+    SummaryNode->>Memory: Reads 'topics' & formattedMessages
+    Note right of SummaryNode: Loops topics, calls OpenAI for stories
+    SummaryNode->>Memory: Writes generated 'stories' & 'catchallStory'
+    Flows->>FormatNode: Execute(memory)
+    FormatNode->>Memory: Reads 'stories' & 'catchallStory'
+    Note right of FormatNode: Assembles final markdown
+    FormatNode->>Memory: Writes final 'summary'
+    Flows->>API: Return { summary, usage, metadata } from memory
+```

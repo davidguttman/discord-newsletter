@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-07-23T17:18:28.945Z",
+  "summary": {
+    "totalIssues": 3,
+    "byType": {
+      "missing_link": 2,
+      "misrepresentation": 1
+    },
+    "bySeverity": {
+      "low": 3
+    },
+    "issues": [
+      {
+        "type": "missing_link",
+        "description": "YouTube link shared by swyxio omitted from newspaper output",
+        "severity": "low",
+        "input_evidence": "swyxio: https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4",
+        "output_evidence": "No mention of the YouTube link in Newspaper Output"
+      },
+      {
+        "type": "missing_link",
+        "description": "Tweet/X link shared by fanahova omitted from newspaper output",
+        "severity": "low",
+        "input_evidence": "fanahova: https://x.com/freddie_v4/status/1947692034665644136",
+        "output_evidence": "No mention of the X/Twitter link in Newspaper Output"
+      },
+      {
+        "type": "misrepresentation",
+        "description": "Number of times the word 'stuck' repeated by slono shortened, slightly altering the tone of the quote",
+        "severity": "low",
+        "input_evidence": "slono: \"kimi's been very stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck for me today.\"",
+        "output_evidence": "Newspaper Output: “kimi's been very stuck stuck stuck stuck stuck for me today.”"
+      }
+    ]
+  },
+  "detailed_issues": [
+    {
+      "type": "missing_link",
+      "description": "YouTube link shared by swyxio omitted from newspaper output",
+      "severity": "low",
+      "input_evidence": "swyxio: https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4",
+      "output_evidence": "No mention of the YouTube link in Newspaper Output"
+    },
+    {
+      "type": "missing_link",
+      "description": "Tweet/X link shared by fanahova omitted from newspaper output",
+      "severity": "low",
+      "input_evidence": "fanahova: https://x.com/freddie_v4/status/1947692034665644136",
+      "output_evidence": "No mention of the X/Twitter link in Newspaper Output"
+    },
+    {
+      "type": "misrepresentation",
+      "description": "Number of times the word 'stuck' repeated by slono shortened, slightly altering the tone of the quote",
+      "severity": "low",
+      "input_evidence": "slono: \"kimi's been very stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck for me today.\"",
+      "output_evidence": "Newspaper Output: “kimi's been very stuck stuck stuck stuck stuck for me today.”"
+    }
+  ],
+  "input_message_count": 40,
+  "output_length": 4099
+}

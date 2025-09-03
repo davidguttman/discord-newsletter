@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-07-23T17:15:33.198Z",
+  "summary": {
+    "totalIssues": 3,
+    "byType": {
+      "misrepresentation": 1,
+      "hallucinated_link": 1,
+      "missing_link": 1
+    },
+    "bySeverity": {
+      "medium": 1,
+      "low": 2
+    },
+    "issues": [
+      {
+        "type": "misrepresentation",
+        "description": "The YouTube link is presented as showing Kimi’s performance, but the input only mentions the channel generically, not specifically Kimi.",
+        "severity": "medium",
+        "input_evidence": "swyxio: https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4 hearing good things about this channel",
+        "output_evidence": "Watch Kimi’s performance in action (https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4)."
+      },
+      {
+        "type": "hallucinated_link",
+        "description": "The article inserts a Moonshot link (https://moonshot.com) that is not present in the input messages.",
+        "severity": "low",
+        "input_evidence": "0xgrrr: \"Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint\" (no link provided)",
+        "output_evidence": "check out insights into implementations of Claude Code tools found on [Moonshot’s Anthropic-compatible endpoint](https://moonshot.com)"
+      },
+      {
+        "type": "missing_link",
+        "description": "The Resources section omits the actual maybe-finance GitHub URL despite it being provided earlier in the article and in the input.",
+        "severity": "low",
+        "input_evidence": "youngphlo: https://github.com/maybe-finance/maybe",
+        "output_evidence": "[maybe-finance GitHub repository]()"
+      }
+    ]
+  },
+  "detailed_issues": [
+    {
+      "type": "misrepresentation",
+      "description": "The YouTube link is presented as showing Kimi’s performance, but the input only mentions the channel generically, not specifically Kimi.",
+      "severity": "medium",
+      "input_evidence": "swyxio: https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4 hearing good things about this channel",
+      "output_evidence": "Watch Kimi’s performance in action (https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4)."
+    },
+    {
+      "type": "hallucinated_link",
+      "description": "The article inserts a Moonshot link (https://moonshot.com) that is not present in the input messages.",
+      "severity": "low",
+      "input_evidence": "0xgrrr: \"Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint\" (no link provided)",
+      "output_evidence": "check out insights into implementations of Claude Code tools found on [Moonshot’s Anthropic-compatible endpoint](https://moonshot.com)"
+    },
+    {
+      "type": "missing_link",
+      "description": "The Resources section omits the actual maybe-finance GitHub URL despite it being provided earlier in the article and in the input.",
+      "severity": "low",
+      "input_evidence": "youngphlo: https://github.com/maybe-finance/maybe",
+      "output_evidence": "[maybe-finance GitHub repository]()"
+    }
+  ],
+  "input_message_count": 40,
+  "output_length": 5102
+}

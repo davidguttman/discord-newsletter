@@ -1,0 +1,98 @@
+Analyze these Discord messages and group them into topics with the actual messages.
+
+Task: Group messages by topic and assign each message to exactly one topic.
+
+Requirements:
+- Each message must be assigned to exactly one topic
+- Create topics that capture the actual discussions happening
+- Include all message details: ID, timestamp, username, content
+- Use descriptive topic names that explain what's being discussed
+- Group related messages together even if they're not replies to each other
+
+Discord Messages:
+[7/21/2025, 4:25:56 PM] spj1996: When Vectors Break Down: Graph-Based RAG...
+[7/21/2025, 4:25:58 PM] dr.spaceman: What’s the current flow you're aiming for?
+[7/21/2025, 5:02:48 PM] mittens4025: MCP doesn't care how long running your tool calls are. The frameworks usually do.
+  [7/21/2025, 5:08:04 PM] ngamolsky9602: When you say frameworks what do you mean? Im wondering specifically about Claude Desktop as a client.
+    [7/21/2025, 7:32:27 PM] xr0am: Claude desktop and cursor have default non configurable timeout at 60sec.
+Cline and n8n have configurable timeout options, librechat as well.
+Best way if you insist on Claude desktop is you offload to background job and return a task ID + have a polling tool
+[7/21/2025, 5:16:38 PM] swyxio: humanloop shutting down - no tweets or blogposts, just email to custs https://news.ycombinator.com/item?id=44592216
+[7/21/2025, 5:38:59 PM] mittens4025: By framework, I was thinking of claude code and agent frameworks/sdks that run the selected tools automatically for you in a loop.
+
+Hmm, lots of clients might care as well actually. I was thinking of mcp usage as decoupling the tool selection and the tool execution.
+[7/21/2025, 6:36:31 PM] muzachomega: 🧵
+[7/21/2025, 7:28:33 PM] xr0am: I prefer this framework personally, that sits on top of it and improves upon it, that is how I built my MCP:
+
+ https://github.com/QuantGeekDev/mcp-framework
+[7/21/2025, 8:13:03 PM] swyxio: https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4 hearing good things about this channel
+  [7/22/2025, 12:14:34 AM] 0xgrrr: What's very interesting is that Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint (e.g., WebSearch --> Chinese engine). I don't know any other providers who've gone to this length, so it's a breeze to use as a replacement for Sonnet.
+    [7/22/2025, 1:12:54 AM] xr0am: Kimi is underrated imo, I use daily now. Yesterday it one-shotted the answer to an issue I had deploying mem0 on my NAS, where claude struggled for 3 hours back and forth of testing configs
+[7/21/2025, 11:08:03 PM] youngphlo: https://github.com/maybe-finance/maybe for <@286141792670318603> the only Ruby pilled person i know
+[7/22/2025, 12:14:02 AM] yikesawjeez: im not rubypilled but i hope to be when i grow up (the ancient wizards tell me to do C or Rust instead of picking Yet Another Scripting Language, but i am a script kiddie at heart)
+[7/22/2025, 12:44:10 AM] mdcker: > ChatGPT users send 2.5 billion prompts a day
+> 
+> About 330 million of those are coming from users in the U.S.
+https://techcrunch.com/2025/07/21/chatgpt-users-send-2-5-billion-prompts-a-day
+[7/22/2025, 1:11:08 AM] zmaril: Does anyone know of a repo of open data that records the price of the api for major providers for each model over time?
+  [7/22/2025, 3:43:25 AM] zachmayer: Lite LLM has it, you could maybe use git history to get changes over time
+[7/22/2025, 1:14:06 AM] xr0am: 
+[7/22/2025, 1:51:17 AM] mdcker: <@670165773465026580> I'd like to hear about more about your experiences with mem0 
+Let me know whether you found it useful after some prolonged usage
+[7/22/2025, 2:03:40 AM] xr0am: Sure will update here
+[7/22/2025, 2:04:04 AM] xr0am: For now just got it barely working, still having some issues with the vector DB. Worst case will do supabase
+[7/22/2025, 4:32:54 AM] zachmayer: Cost history via LiteLLM
+[7/22/2025, 5:43:42 AM] slono: i'm addicted to crush + kimi
+  [7/22/2025, 6:14:20 AM] zachmayer: Whats crush?
+[7/22/2025, 6:15:02 AM] slono: charmbracelet's early alpha opencode version
+  [7/22/2025, 6:27:54 AM] kylemathews: How do you get it?
+    [7/22/2025, 6:29:36 AM] slono: there's a list you can signup for on their discord, i've been a contributor to charm stuff over the years, maybe that helped me get in. I know <@364753007021260800> is in ther eas well
+  [7/22/2025, 7:49:50 AM] mokhtar: How does it differ from the actual opencode ?
+[7/22/2025, 6:37:55 AM] foxbarrington: <@1362840252938719353> what’s the schedule
+  [7/22/2025, 6:37:56 AM] AI In Action Bot: **Upcoming Speakers (Next 5):**
+- Friday, July 25, 2025: @ninjaa2377 - "Using Claude Code in a Cloud VM for 24/7 automation of marketing tasks and personal CRM tasks"
+- Friday, August 1, 2025: @slono - "learning and building with deep research and manus"
+- Friday, August 8, 2025: @scottwerner - "Doc based vibe coding systems"
+  [7/22/2025, 6:42:01 AM] muzachomega: I think that <@363877777977376768> booking is an accidental dupe from last week
+[7/22/2025, 6:44:12 AM] slono: yeah it's dupe
+[7/22/2025, 6:44:24 AM] slono: <@1362840252938719353> cancel my talk on august 1
+  [7/22/2025, 6:44:25 AM] AI In Action Bot: Okay, I have cancelled your talk "learning and building with deep research and manus" scheduled for Friday, August 1, 2025.
+[7/22/2025, 6:44:42 AM] slono: good bot, very nice bot
+[7/22/2025, 7:12:34 AM] muzachomega: kimi's been very stuck stuck stuck stuck
+[7/22/2025, 7:52:37 AM] thenoahhein: anyone here used goose? https://block.github.io/goose/docs/quickstart
+[7/22/2025, 8:02:47 AM] slono: it's pretty 🤣
+[7/22/2025, 8:03:18 AM] slono: and the whole vibes around the opencode beef from the "opensource" side kinda turned me off
+[7/22/2025, 8:46:49 AM] swyxio: stargate progress https://x.com/OpenAI/status/1947628731142648113
+  [7/22/2025, 8:46:49 AM] Red - X-Ware.v0: 
+  [7/22/2025, 8:46:49 AM] Red - X-Ware.v0: 
+  [7/22/2025, 8:46:49 AM] Red - X-Ware.v0: https://xcancel.com/OpenAI/status/1947628731142648113
+  [7/22/2025, 8:47:06 AM] Red - X-Ware.v0: OpenRouter API failed to return a summary.
+
+
+Respond with this JSON format:
+{
+  "topic_groups": {
+    "AI Tools and Performance Discussion": [
+      {
+        "id": "msg_1",
+        "timestamp": "[7/21/2025, 5:02:48 PM]",
+        "username": "mittens4025", 
+        "content": "MCP doesn't care how long running your tool calls are. The frameworks usually do."
+      },
+      {
+        "id": "msg_2",
+        "timestamp": "[7/21/2025, 5:08:04 PM]",
+        "username": "ngamolsky9602",
+        "content": "When you say frameworks what do you mean? Im wondering specifically about Claude Desktop as a client."
+      }
+    ],
+    "Programming Language Preferences": [
+      {
+        "id": "msg_15",
+        "timestamp": "[7/22/2025, 12:14:02 AM]",
+        "username": "yikesawjeez",
+        "content": "im not rubypilled but i hope to be when i grow up"
+      }
+    ]
+  }
+}

@@ -19,7 +19,13 @@ const defaults = {
   // Mailgun configuration
   mailgunApiKey: '',
   mailgunDomain: '',
-  mailgunFrom: 'Discord Newsletter <newsletter@example.com>'
+  mailgunFrom: 'Discord Newsletter <newsletter@example.com>',
+  // BrainyFlow configuration
+  useBrainyFlow: false,
+  brainyFlowMaxVisits: 10,
+  brainyFlowTimeout: 300000, // 5 minutes
+  brainyFlowRetryCount: 3,
+  brainyFlowBatchSize: 5
 }
 
 // Merge defaults with environment variables
@@ -41,7 +47,13 @@ const config = {
   // Mailgun configuration
   mailgunApiKey: process.env.MAILGUN_API_KEY || defaults.mailgunApiKey,
   mailgunDomain: process.env.MAILGUN_DOMAIN || defaults.mailgunDomain,
-  mailgunFrom: process.env.MAILGUN_FROM || defaults.mailgunFrom
+  mailgunFrom: process.env.MAILGUN_FROM || defaults.mailgunFrom,
+  // BrainyFlow configuration
+  useBrainyFlow: process.env.USE_BRAINYFLOW === 'true' || defaults.useBrainyFlow,
+  brainyFlowMaxVisits: process.env.BRAINYFLOW_MAX_VISITS ? parseInt(process.env.BRAINYFLOW_MAX_VISITS) : defaults.brainyFlowMaxVisits,
+  brainyFlowTimeout: process.env.BRAINYFLOW_TIMEOUT ? parseInt(process.env.BRAINYFLOW_TIMEOUT) : defaults.brainyFlowTimeout,
+  brainyFlowRetryCount: process.env.BRAINYFLOW_RETRY_COUNT ? parseInt(process.env.BRAINYFLOW_RETRY_COUNT) : defaults.brainyFlowRetryCount,
+  brainyFlowBatchSize: process.env.BRAINYFLOW_BATCH_SIZE ? parseInt(process.env.BRAINYFLOW_BATCH_SIZE) : defaults.brainyFlowBatchSize
 }
 
 // Configure logging based on environment

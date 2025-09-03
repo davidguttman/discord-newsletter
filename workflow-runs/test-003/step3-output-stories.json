@@ -1,0 +1,65 @@
+{
+  "AI Model and Framework Discussion (MCP, Claude, Kimi)": {
+    "story": "**MCP Framework Enhancements Highlighted**\n\nxr0am reported on a framework that improves upon existing systems, stating, \"I prefer this framework personally, that sits on top of it and improves upon it, that is how I built my MCP.\" The framework is available at https://github.com/QuantGeekDev/mcp-framework.\n\n**Claude Code Tools Supported on Moonshot Endpoint**\n\n0xgrrr noted that Moonshot has implemented support for Claude Code tools on its Anthropic-compatible endpoint. This allows for seamless replacement of Sonnet, with an example being WebSearch to a Chinese engine.\n\n**Kimi Praised for Performance Over Claude**\n\nxr0am shared a positive experience with Kimi, stating, \"Kimi is underrated imo, I use daily now.\" They reported that Kimi \"one-shotted the answer to an issue I had deploying mem0 on my NAS, where claude struggled for 3 hours back and forth of testing configs.\"\n\n**Charmbracelet Alpha Version \"Crush\" Gains Traction**\n\nslono expressed enthusiasm for \"crush,\" the early alpha opencode version of charmbracelet, stating, \"i'm addicted to crush + kimi.\" Access to \"crush\" is reportedly available via a signup list on its Discord server.",
+    "message_count": 17,
+    "usage": {
+      "prompt_tokens": 981,
+      "completion_tokens": 262,
+      "total_tokens": 1243
+    }
+  },
+  "Tool Call Timeouts and Client Behavior": {
+    "story": "**Claude Desktop Tool Call Timeout Fixed at 60 Seconds**\n\nClaude desktop and cursor now have a default, non-configurable timeout of 60 seconds for tool calls, xr0am reported. This differs from Cline, n8n, and LibreChat, which offer configurable timeout options.\n\n**Workaround for Claude Desktop Tool Call Timeouts Suggested**\n\nFor users insisting on Claude desktop, xr0am suggested offloading tool calls to background jobs and returning a task ID with a polling tool to circumvent the 60-second timeout.",
+    "message_count": 1,
+    "usage": {
+      "prompt_tokens": 211,
+      "completion_tokens": 111,
+      "total_tokens": 322
+    }
+  },
+  "Industry News and Events": {
+    "story": "**Humanloop Shutting Down**\n\nHumanloop is ceasing operations, with customers notified via email rather than public announcements. swyxio reported the shutdown, linking to a Hacker News discussion.\n\n**ChatGPT Prompts Reach 2.5 Billion Daily**\n\nChatGPT users are sending an average of 2.5 billion prompts each day, with 330 million originating from the U.S. mdcker shared the statistic from TechCrunch.\n\n**OpenAI Stargate Progress Shared**\n\nOpenAI has provided an update on its Stargate project progress. swyxio shared a link to the announcement on X.\n\n**AI In Action Schedule Updates**\n\nThe AI In Action Bot has updated its speaker schedule, confirming a talk by @ninjaa2377 on July 25th and @scottwerner on August 8th. @slono's talk on August 1st was canceled due to a duplicate entry.",
+    "message_count": 16,
+    "usage": {
+      "prompt_tokens": 1019,
+      "completion_tokens": 194,
+      "total_tokens": 1213
+    }
+  },
+  "Programming Language and Project Discussion (Ruby, Rust, C)": {
+    "story": "**Ruby Project \"Maybe\" Highlighted**\n\nyoungphlo highlighted the Ruby project \"Maybe\" (github.com/maybe-finance/maybe), noting it as a significant project for a Ruby enthusiast.\n\n**Developer Weighs Language Choices**\n\nyikesawjeez expressed interest in Ruby but is considering C or Rust based on advice from experienced developers, while still identifying as a \"script kiddie.\"",
+    "message_count": 2,
+    "usage": {
+      "prompt_tokens": 273,
+      "completion_tokens": 83,
+      "total_tokens": 356
+    }
+  },
+  "API Pricing and Data Repositories": {
+    "story": "Here are the tech news stories based on the Discord messages:\n\n**LiteLLM Tracks API Pricing Changes**\n\nLiteLLM maintains a repository of API pricing for major providers across different models, according to zachmayer. This data can be accessed through git history to track cost changes over time.\n\n**Open Data Repository Sought for API Pricing**\n\nzmaril is seeking an open data repository that records the historical pricing of APIs from major providers for various models. This information would allow for tracking of price fluctuations over time.",
+    "message_count": 3,
+    "usage": {
+      "prompt_tokens": 249,
+      "completion_tokens": 106,
+      "total_tokens": 355
+    }
+  },
+  "Project Experience and Technical Issues (mem0, Vector DB)": {
+    "story": "**xr0am Reports mem0 Integration Challenges**\n\nxr0am is experiencing difficulties integrating mem0, specifically with its vector database. \"Worst case will do supabase,\" xr0am stated, indicating a potential fallback solution if the current issues persist.\n\n**mdcker Seeks mem0 Usage Feedback**\n\nmdcker is requesting extended user experience feedback on mem0. xr0am has committed to providing an update on their prolonged usage of the project.",
+    "message_count": 3,
+    "usage": {
+      "prompt_tokens": 286,
+      "completion_tokens": 93,
+      "total_tokens": 379
+    }
+  },
+  "New Tools and Libraries (Goose)": {
+    "story": "**Goose Quickstart Guide Available**\n\nthenoahhein shared a link to the Goose quickstart guide, offering users an entry point to the new tool. The guide can be found at https://block.github.io/goose/docs/quickstart.",
+    "message_count": 1,
+    "usage": {
+      "prompt_tokens": 173,
+      "completion_tokens": 53,
+      "total_tokens": 226
+    }
+  }
+}

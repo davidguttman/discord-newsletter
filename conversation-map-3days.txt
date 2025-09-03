@@ -1,0 +1,79 @@
+🗺️  CONVERSATION MAP - Past 3 Days
+════════════════════════════════════════════════════════════════════════════════
+📝 Found 162 messages
+
+1. 💬 REPLY_CHAIN: Reply Chain (2 messages)
+📅 2025-07-21 | Started: 23:34 | Ended: 23:42
+👥 Participants: vodros, xr0am
+
+2. 💬 REPLY_CHAIN: Reply Chain (2 messages)
+📅 2025-07-21 | Started: 23:55 | Ended: 23:56
+👥 Participants: xr0am, vodros
+
+3. 💬 REPLY_CHAIN: Reply Chain (3 messages)
+📅 2025-07-21 | Started: 14:02 | Ended: 17:02
+👥 Participants: abrinz, dr.spaceman, mittens4025
+
+4. 🧵 THREAD: Thread 10934795 (2 messages)
+📅 2025-07-21 | Started: 15:22 | Ended: 16:25
+👥 Participants: swyxio, spj1996
+├─ [15:22] swyxio: hit the bell for <@550368966925877283> ! https://youtu.be...
+│  [16:25] spj1996: [empty]
+
+5. 💬 REPLY_CHAIN: Reply Chain (2 messages)
+📅 2025-07-22 | Started: 17:19 | Ended: 23:04
+👥 Participants: scottwerner, swyxio
+
+6. 🧵 THREAD: Thread 27303690 (2 messages)
+📅 2025-07-22 | Started: 03:55 | Ended: 04:32
+👥 Participants: zmaril, zachmayer
+├─ [03:55] zmaril: Interesting, thanks
+│  [04:32] zachmayer: [empty]
+
+7. 💬 REPLY_CHAIN: Reply Chain (2 messages)
+📅 2025-07-22 | Started: 06:27 | Ended: 07:49
+👥 Participants: kylemathews, mokhtar
+
+8. 💬 REPLY_CHAIN: Reply Chain (2 messages)
+📅 2025-07-22 | Started: 06:37 | Ended: 06:42
+👥 Participants: AI In Action Bot, muzachomega
+
+9. 🧵 THREAD: Thread 76460006 (2 messages)
+📅 2025-07-22 | Started: 06:55 | Ended: 07:12
+👥 Participants: slono, muzachomega
+├─ [06:55] slono: kimi's been very stuck stuck stuck stuck stuck stuck stuc...
+│  [07:12] muzachomega: [empty]
+
+10. 🧵 THREAD: Thread 98487449 (2 messages)
+📅 2025-07-22 | Started: 09:18 | Ended: 09:18
+👥 Participants: fanahova, Red - X-Ware.v0
+├─ [09:18] fanahova: https://x.com/freddie_v4/status/1947692034665644136
+│  [09:18] Red - X-Ware.v0: [empty]
+
+11. 🧵 THREAD: Thread 89540373 (2 messages)
+📅 2025-07-23 | Started: 09:23 | Ended: 09:23
+👥 Participants: __chef__
+├─ [09:23] __chef__: anybody have recommendations in the tooling space when it...
+│  [09:23] __chef__: [empty]
+
+📝 STANDALONE MESSAGES (99)
+────────────────────────────────────────────────────────────
+[2025-07-21 20:01] dr.spaceman: I mean you can get an AI to output a confidence level, easily. It's a matter ...
+[2025-07-21 20:01] dr.spaceman: And that's a whole friggin multi-layer interdimesional rabbit hole.
+[2025-07-21 20:03] kbal11: I agree with Fame. Pick a date and we can move one off.
+[2025-07-21 21:57] guardiang: Pretty sure Anthropic dialed back the CC usage tracking again, took me way lo...
+[2025-07-21 23:05] vodros: They finally brought kimi k2 to cursor lfggg
+[2025-07-21 23:14] vodros: it's slow as hell 🥀🥀
+[2025-07-21 23:22] vodros: makes sense
+[2025-07-21 23:23] vodros: but I've also seen people reporting cases where the model would write fake te...
+[2025-07-21 23:28] vodros: true
+[2025-07-21 23:28] vodros: how many tasks were completed in the 9h run?
+... and 89 more
+
+📊 CONVERSATION SUMMARY
+════════════════════════════════════════
+Total Conversations: 11
+Thread Conversations: 5
+Reply Chain Conversations: 6
+Standalone Messages: 99
+Avg Messages per Conversation: 6

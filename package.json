@@ -24,6 +24,7 @@
   "dependencies": {
     "authentic-service": "^1.0.0",
     "axios": "^1.8.4",
+    "brainyflow": "^2.1.0",
     "budo": "^11.8.2",
     "cuid": "^3.0.0",
     "deasync": "^0.1.30",

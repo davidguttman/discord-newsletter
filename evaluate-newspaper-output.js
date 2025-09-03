@@ -6,16 +6,16 @@ const https = require('https')
 const config = require('./config')
 
 // Direct HTTP request to OpenAI API for O3 support
-async function callOpenAI(messages, model = 'o3') {
+async function callOpenAI (messages, model = 'o3') {
   const payload = {
-    model: model,
-    messages: messages,
+    model,
+    messages,
     response_format: { type: 'text' },
     reasoning_effort: 'low'
   }
-  
+
   const data = JSON.stringify(payload)
-  
+
   console.log('🔧 API Request payload size:', data.length, 'bytes')
 
   const options = {
@@ -25,7 +25,7 @@ async function callOpenAI(messages, model = 'o3') {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.openaiApiKey}`,
+      Authorization: `Bearer ${config.openaiApiKey}`,
       'Content-Length': Buffer.byteLength(data, 'utf8')
     }
   }
@@ -33,17 +33,17 @@ async function callOpenAI(messages, model = 'o3') {
   return new Promise((resolve, reject) => {
     const req = https.request(options, (res) => {
       let responseData = ''
-      
+
       res.on('data', (chunk) => {
         responseData += chunk
       })
-      
+
       res.on('end', () => {
         console.log('🔧 API Response status:', res.statusCode)
         if (res.statusCode !== 200) {
           console.log('🔧 API Response body:', responseData.substring(0, 500))
         }
-        
+
         try {
           const parsed = JSON.parse(responseData)
           if (res.statusCode !== 200) {
@@ -98,48 +98,48 @@ NEWSPAPER OUTPUT:
 Analyze and return JSON array of issues:`
 
 class NewspaperEvaluator {
-  constructor() {
+  constructor () {
     this.inputMessages = null
     this.newspaperOutput = null
   }
 
   // Load input messages from sample file
-  loadInputMessages() {
+  loadInputMessages () {
     const filePath = path.join(__dirname, 'channel-messages-sample.txt')
     const content = fs.readFileSync(filePath, 'utf8')
-    
+
     // Extract just the message lines
     const messageLines = content.split('\n')
       .filter(line => line.match(/^\[.+?\] [^:]+: .+$/))
       .join('\n')
-    
+
     this.inputMessages = messageLines
     console.log(`📄 Loaded input messages (${messageLines.split('\n').length} messages)`)
     return this.inputMessages
   }
 
-  // Get newspaper output from existing test-output.txt file  
-  async getNewspaperOutput() {
+  // Get newspaper output from existing test-output.txt file
+  async getNewspaperOutput () {
     console.log('📰 Loading newspaper output from test-output.txt...')
-    
+
     const outputPath = path.join(__dirname, 'test-output.txt')
     const content = fs.readFileSync(outputPath, 'utf8')
-    
+
     // Extract just the final newspaper content between the markers
     const startMarker = '📰 FINAL NEWSPAPER SUMMARY'
     const endMarker = '📈 Usage:'
-    
+
     const startIndex = content.indexOf(startMarker)
     const endIndex = content.indexOf(endMarker)
-    
+
     if (startIndex === -1 || endIndex === -1) {
       throw new Error('Could not find newspaper summary in test-output.txt')
     }
-    
+
     // Extract the newspaper content
     const summarySection = content.substring(startIndex, endIndex)
     const lines = summarySection.split('\n')
-    
+
     // Skip the header lines and get the actual content
     let contentStartIndex = -1
     for (let i = 0; i < lines.length; i++) {
@@ -148,24 +148,24 @@ class NewspaperEvaluator {
         break
       }
     }
-    
+
     if (contentStartIndex === -1) {
       throw new Error('Could not find start of newspaper content')
     }
-    
+
     this.newspaperOutput = lines.slice(contentStartIndex).join('\n').trim()
     console.log(`📰 Loaded newspaper output (${this.newspaperOutput.length} characters)`)
     return this.newspaperOutput
   }
 
   // Evaluate with O1/O3 model
-  async evaluateWithAI() {
+  async evaluateWithAI () {
     if (!this.inputMessages || !this.newspaperOutput) {
       throw new Error('Must load input messages and newspaper output first')
     }
 
     console.log('🤖 Sending to AI for evaluation...')
-    
+
     const prompt = EVALUATION_PROMPT
       .replace('{input_messages}', this.inputMessages)
       .replace('{newspaper_output}', this.newspaperOutput)
@@ -183,7 +183,7 @@ class NewspaperEvaluator {
       ], 'o3')
 
       const evaluationText = response.choices[0].message.content.trim()
-      
+
       // Try to parse as JSON
       let evaluation
       try {
@@ -191,11 +191,11 @@ class NewspaperEvaluator {
         evaluation = JSON.parse(evaluationText)
       } catch (parseError) {
         console.error('Failed to parse AI response as JSON:', parseError.message)
-        
+
         // Try to save the raw response for debugging
         fs.writeFileSync('debug-response.json', evaluationText)
         console.log('💾 Saved raw response to debug-response.json')
-        
+
         // Try to manually parse the saved file
         try {
           const savedContent = fs.readFileSync('debug-response.json', 'utf8')
@@ -209,7 +209,6 @@ class NewspaperEvaluator {
 
       console.log(`✅ Evaluation complete: ${evaluation.length} issues found`)
       return evaluation
-
     } catch (error) {
       console.error('OpenAI API error:', error.message)
       throw error
@@ -217,10 +216,10 @@ class NewspaperEvaluator {
   }
 
   // Generate summary report
-  generateReport(evaluation) {
+  generateReport (evaluation) {
     console.log('\n📊 EVALUATION REPORT')
     console.log('='.repeat(60))
-    
+
     if (evaluation.length === 0) {
       console.log('✅ No issues found!')
       return
@@ -229,7 +228,7 @@ class NewspaperEvaluator {
     // Count by type
     const typeCount = {}
     const severityCount = {}
-    
+
     evaluation.forEach(issue => {
       typeCount[issue.type] = (typeCount[issue.type] || 0) + 1
       severityCount[issue.severity] = (severityCount[issue.severity] || 0) + 1
@@ -248,7 +247,7 @@ class NewspaperEvaluator {
 
     console.log('\n🔍 Detailed Issues:')
     evaluation.forEach((issue, i) => {
-      console.log(`\n${i+1}. [${issue.severity.toUpperCase()}] ${issue.type}`)
+      console.log(`\n${i + 1}. [${issue.severity.toUpperCase()}] ${issue.type}`)
       console.log(`   Description: ${issue.description}`)
       if (issue.input_evidence) {
         console.log(`   Input: "${issue.input_evidence}"`)
@@ -267,10 +266,10 @@ class NewspaperEvaluator {
   }
 
   // Save results to file
-  saveResults(evaluation, report) {
+  saveResults (evaluation, report) {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     const filename = `evaluation-results-${timestamp}.json`
-    
+
     const results = {
       timestamp: new Date().toISOString(),
       summary: report,
@@ -285,29 +284,28 @@ class NewspaperEvaluator {
 }
 
 // CLI Interface
-async function main() {
+async function main () {
   console.log('🧪 NEWSPAPER OUTPUT EVALUATOR')
   console.log('Using O1/O3 model for objective fact-checking analysis')
-  
+
   try {
     const evaluator = new NewspaperEvaluator()
-    
+
     // Load input and generate output
     evaluator.loadInputMessages()
     await evaluator.getNewspaperOutput()
-    
+
     // Get AI evaluation
     const evaluation = await evaluator.evaluateWithAI()
-    
+
     // Generate and display report
     const report = evaluator.generateReport(evaluation)
-    
+
     // Save results
     evaluator.saveResults(evaluation, report)
-    
+
     // Exit with error code if issues found
     process.exit(evaluation.length > 0 ? 1 : 0)
-    
   } catch (error) {
     console.error('❌ Evaluation failed:', error.message)
     process.exit(1)

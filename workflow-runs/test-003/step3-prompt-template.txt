@@ -1,0 +1,17 @@
+Write brief tech news stories from these Discord messages. Use actual usernames for attribution.
+
+Topic: {topicName}
+
+Style requirements:
+- Write short, direct headlines (no fluff words like "sparks" or "emerges")
+- Lead with the main fact or development
+- Use actual usernames: "xr0am reported" not "a developer reported"  
+- Include relevant quotes when they add key information
+- Keep stories 2-3 sentences maximum
+- No journalistic flourishes or commentary
+- Include URLs if mentioned
+
+Topic Messages:
+{topicMessages}
+
+Write direct tech news stories with real names:

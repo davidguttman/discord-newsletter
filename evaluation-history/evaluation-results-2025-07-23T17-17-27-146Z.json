@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-07-23T17:17:27.146Z",
+  "summary": {
+    "totalIssues": 3,
+    "byType": {
+      "hallucinated_link": 2,
+      "misrepresentation": 1
+    },
+    "bySeverity": {
+      "medium": 2,
+      "low": 1
+    },
+    "issues": [
+      {
+        "type": "hallucinated_link",
+        "description": "The article inserts a hyperlink to \"Moonshot’s Anthropic-compatible endpoint\" (https://moonshot.com) that does not appear anywhere in the input messages.",
+        "severity": "medium",
+        "input_evidence": "\"What's very interesting is that Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint\" (no URL provided)",
+        "output_evidence": "\"implementations of Claude Code tools found on [Moonshot’s Anthropic-compatible endpoint](https://moonshot.com)\""
+      },
+      {
+        "type": "hallucinated_link",
+        "description": "The report adds a link to Charmbracelet’s Discord that is not present in the source messages.",
+        "severity": "low",
+        "input_evidence": "\"there's a list you can signup for on their discord\" (no Discord invite link provided)",
+        "output_evidence": "\"Join the ongoing conversation on Crush through [Charmbracelet's Discord](https://discord.com/invite/charmbracelet).\""
+      },
+      {
+        "type": "misrepresentation",
+        "description": "The YouTube video shared was only described as a channel others were hearing good things about, but the article claims it shows \"Kimi’s performance in action,\" which is not supported by the input.",
+        "severity": "medium",
+        "input_evidence": "\"https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4 hearing good things about this channel\"",
+        "output_evidence": "\"[Watch Kimi’s performance in action](https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4).\""
+      }
+    ]
+  },
+  "detailed_issues": [
+    {
+      "type": "hallucinated_link",
+      "description": "The article inserts a hyperlink to \"Moonshot’s Anthropic-compatible endpoint\" (https://moonshot.com) that does not appear anywhere in the input messages.",
+      "severity": "medium",
+      "input_evidence": "\"What's very interesting is that Moonshot even implemented support for Claude Code tools on their Anthropic-compatible endpoint\" (no URL provided)",
+      "output_evidence": "\"implementations of Claude Code tools found on [Moonshot’s Anthropic-compatible endpoint](https://moonshot.com)\""
+    },
+    {
+      "type": "hallucinated_link",
+      "description": "The report adds a link to Charmbracelet’s Discord that is not present in the source messages.",
+      "severity": "low",
+      "input_evidence": "\"there's a list you can signup for on their discord\" (no Discord invite link provided)",
+      "output_evidence": "\"Join the ongoing conversation on Crush through [Charmbracelet's Discord](https://discord.com/invite/charmbracelet).\""
+    },
+    {
+      "type": "misrepresentation",
+      "description": "The YouTube video shared was only described as a channel others were hearing good things about, but the article claims it shows \"Kimi’s performance in action,\" which is not supported by the input.",
+      "severity": "medium",
+      "input_evidence": "\"https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4 hearing good things about this channel\"",
+      "output_evidence": "\"[Watch Kimi’s performance in action](https://youtu.be/-sUB_4vONAk?si=S3YFLBjqSQ0iUVq4).\""
+    }
+  ],
+  "input_message_count": 40,
+  "output_length": 5102
+}

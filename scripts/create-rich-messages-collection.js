@@ -2,7 +2,7 @@
 
 const mongoose = require('../lib/mongo')
 
-async function createRichMessagesCollection() {
+async function createRichMessagesCollection () {
   try {
     console.log('🗄️  Creating new rich_messages collection...')
     await mongoose.connection
@@ -79,7 +79,7 @@ async function createRichMessagesCollection() {
         description: String,
         url: String
       }],
-      
+
       // Rich Discord data from raw API
       messageType: String, // "DEFAULT", "REPLY", etc.
       system: Boolean,
@@ -88,7 +88,7 @@ async function createRichMessagesCollection() {
       flags: Number,
       position: Number, // Position in thread
       cleanContent: String, // Discord's cleaned content
-      
+
       // Complete mention data
       mentions: {
         everyone: Boolean,
@@ -97,23 +97,23 @@ async function createRichMessagesCollection() {
         repliedUser: String, // ID of replied user
         channels: [String] // Array of channel IDs
       },
-      
+
       // Complete reference data for replies
       reference: mongoose.Schema.Types.Mixed,
-      
+
       // Channel metadata
       channelType: String, // "GUILD_TEXT", "GUILD_PUBLIC_THREAD", etc.
       isThread: Boolean,
-      
+
       // Raw Discord timestamps
       createdTimestamp: Number,
       editedTimestamp: Number,
-      
+
       // Additional Discord fields that might be useful
       webhookId: String,
       applicationId: String,
       nonce: String,
-      
+
       // Store complete raw Discord data for future-proofing
       rawDiscordData: mongoose.Schema.Types.Mixed
     }, {
@@ -129,7 +129,7 @@ async function createRichMessagesCollection() {
     richMessageSchema.index({ 'reference.messageId': 1 })
 
     const RichMessage = mongoose.model('RichMessage', richMessageSchema, 'rich_messages')
-    
+
     // Drop the collection if it exists and recreate
     try {
       await RichMessage.collection.drop()
@@ -153,7 +153,6 @@ async function createRichMessagesCollection() {
     console.log('- Ready for: Thread messages, reply chains, mentions, complete Discord data')
 
     process.exit(0)
-
   } catch (error) {
     console.error('❌ Error creating rich_messages collection:', error)
     process.exit(1)

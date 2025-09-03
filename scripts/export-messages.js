@@ -5,9 +5,9 @@ const path = require('path')
 const mongoose = require('../lib/mongo')
 const Message = require('../models/message')
 
-function parseArgs() {
+function parseArgs () {
   const args = process.argv.slice(2)
-  
+
   if (args.length < 1) {
     console.log('Usage: node export-messages.js <channelId> [outputFile]')
     console.log('  channelId: Discord channel ID to export')
@@ -17,18 +17,18 @@ function parseArgs() {
     console.log('Example: node export-messages.js 1209303473263485011 my-export.json')
     process.exit(1)
   }
-  
+
   const [channelId, outputFile] = args
-  
+
   const defaultOutput = `data/channel-${channelId}.json`
   const finalOutput = outputFile || defaultOutput
-  
+
   return { channelId, outputFile: finalOutput }
 }
 
-async function exportMessages() {
+async function exportMessages () {
   const { channelId, outputFile } = parseArgs()
-  
+
   try {
     console.log('📤 Starting message export...')
     console.log(`📍 Channel ID: ${channelId}`)
@@ -104,7 +104,6 @@ async function exportMessages() {
     console.log(`- Output file: ${outputFile}`)
     console.log(`- File size: ${fileSizeMB} MB`)
     console.log('✅ Export completed successfully')
-
   } catch (error) {
     console.error('❌ Fatal error during export:', error)
     process.exit(1)
