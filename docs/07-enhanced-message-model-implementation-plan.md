@@ -199,21 +199,271 @@ Optimize for our specific goals while avoiding non-goals. Take selective element
 - ❌ Complex edge case handling (Non-goal #5)
 - ❌ Performance optimization beyond basic needs (Non-goal #1)
 
-#### Implementation Plan
+#### DETAILED Implementation Plan
 
-**Days 1-2: Stable Foundation**
-- **Day 1 Morning**: Copy enhanced schema from ui branch with validation
-- **Day 1 Afternoon**: Create proper Settings model and resolution logic
-- **Day 2 Morning**: Copy enhanced Discord client with basic error handling
-- **Day 2 Afternoon**: Test backward compatibility with existing data
+### **Phase 1: Stable Foundation (Days 1-2)**
 
-**Days 3-4: Integration & Validation**  
-- **Day 3**: Integration testing with live Discord connection
-- **Day 4**: Production deployment preparation with rollback plan
+#### **Day 1: Enhanced Message Schema**
 
-**Days 5-7: Deploy & Stabilize**
-- **Day 5**: Production deployment with monitoring
-- **Days 6-7**: Fix issues, validate thread capture, basic operational docs
+**Morning (9 AM - 12 PM): Message Model Enhancement**
+```bash
+# 1. Copy enhanced message schema from ui branch
+git show ui:models/message.js > /tmp/enhanced-message.js
+
+# 2. Compare with current main schema  
+git show main:models/message.js > /tmp/current-message.js
+diff /tmp/current-message.js /tmp/enhanced-message.js
+```
+
+**Tasks:**
+- [ ] **Copy new fields from ui branch** to `models/message.js`:
+  - `messageType: String` (DEFAULT, REPLY, etc.)
+  - `mentions: { everyone: Boolean, users: [String], roles: [String], repliedUser: String, channels: [String] }`
+  - `reference: { messageId: String, channelId: String, guildId: String, type: String }`  
+  - `channelType: String`, `isThread: Boolean`
+  - `createdTimestamp: Number`, `editedTimestamp: Number`
+  - `rawDiscordData: mongoose.Schema.Types.Mixed`
+- [ ] **Change content field**: `required: false, default: ''` (handle embed-only messages)
+- [ ] **Add field validation** for critical fields (messageType enum, reference structure)
+- [ ] **Test schema changes** with existing data queries
+
+**Afternoon (1 PM - 5 PM): Settings System Foundation**
+
+**Tasks:**
+- [ ] **Create Settings model** (`models/settings.js`):
+```javascript
+const settingsSchema = new mongoose.Schema({
+  guildId: { type: String, required: true },
+  channelId: { type: String, required: true }, 
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+})
+settingsSchema.index({ guildId: 1, channelId: 1 }, { unique: true })
+```
+- [ ] **Test Settings model** with basic CRUD operations
+- [ ] **Plan settings resolution logic** for Discord client
+- [ ] **Verify backward compatibility** - existing env var setup should still work
+
+#### **Day 2: Enhanced Discord Client**
+
+**Morning (9 AM - 12 PM): Discord Client Enhancement**
+
+**Tasks:**
+- [ ] **Copy enhanced saveMessage function** from ui branch (`lib/discord/discord.js`)
+- [ ] **Add settings resolution logic**:
+```javascript
+async function resolveChannelConfig() {
+  // Try database first
+  const settings = await Settings.findOne().sort({ createdAt: -1 })
+  if (settings) {
+    return [{ guildId: settings.guildId, channelId: settings.channelId }]
+  }
+  
+  // Fall back to environment variables  
+  if (process.env.GUILD_CHANNELS) {
+    return parseEnvChannels(process.env.GUILD_CHANNELS)
+  }
+  
+  console.warn('No Discord channel configuration found')
+  return []
+}
+```
+- [ ] **Add basic error handling** with try-catch around Discord operations
+- [ ] **Add enhanced logging** for new fields being captured
+- [ ] **Test Discord client startup** with both config methods
+
+**Afternoon (1 PM - 5 PM): Backward Compatibility Testing**
+
+**Tasks:**  
+- [ ] **Test with existing messages**: Verify old messages still query correctly
+- [ ] **Test message formatting**: Ensure `lib/message-formatter.js` works with new schema
+- [ ] **Test API endpoints**: Verify `/api/messages`, `/api/summarize` still work
+- [ ] **Run existing tests**: `npm test` should pass
+- [ ] **Test edge cases**: Empty content messages, thread messages, reply chains
+
+### **Phase 2: Integration & Validation (Days 3-4)**
+
+#### **Day 3: Live Integration Testing**
+
+**Morning (9 AM - 12 PM): Discord Connection Testing**
+
+**Tasks:**
+- [ ] **Test Discord client startup** with real token
+- [ ] **Verify new field capture**: Check database for new fields being populated
+- [ ] **Test thread message capture**: Post messages in Discord threads, verify storage
+- [ ] **Test reply chain capture**: Create reply chains, verify reference relationships  
+- [ ] **Test mention capture**: Use @mentions, verify mention arrays populated
+- [ ] **Monitor error logs**: Check for any unexpected Discord API responses
+
+**Afternoon (1 PM - 5 PM): Data Validation**
+
+**Tasks:**
+- [ ] **Validate data quality**: Check rawDiscordData field population
+- [ ] **Test message queries**: Ensure thread messages appear in channel queries
+- [ ] **Test formatting**: Verify threaded message display works correctly
+- [ ] **Performance check**: Monitor database query performance with new fields
+- [ ] **Create test data set**: Capture variety of message types for testing
+
+#### **Day 4: Production Preparation**
+
+**Morning (9 AM - 12 PM): Deployment Preparation**
+
+**Tasks:**
+- [ ] **Create deployment checklist**:
+  - [ ] Database backup before schema changes
+  - [ ] Environment variables validated  
+  - [ ] Discord token and permissions verified
+  - [ ] Rollback plan documented
+- [ ] **Test in staging environment** (if available) or local production-like setup
+- [ ] **Create monitoring queries**:
+```javascript
+// Check new field population rates
+db.messages.aggregate([
+  { $group: { 
+    _id: null, 
+    total: { $sum: 1 },
+    withRawData: { $sum: { $cond: [{ $ne: ["$rawDiscordData", null] }, 1, 0] }},
+    withMentions: { $sum: { $cond: [{ $ne: ["$mentions", null] }, 1, 0] }}
+  }}
+])
+```
+
+**Afternoon (1 PM - 5 PM): Final Validation**
+
+**Tasks:**
+- [ ] **Run full test suite**: All existing tests must pass
+- [ ] **Manual end-to-end test**: Discord message → Database → API → Frontend display
+- [ ] **Performance validation**: No significant performance degradation  
+- [ ] **Security check**: No sensitive data in logs or rawDiscordData
+- [ ] **Documentation prep**: Basic deployment notes and troubleshooting
+
+### **Phase 3: Deploy & Stabilize (Days 5-7)**
+
+#### **Day 5: Production Deployment**
+
+**Morning (9 AM - 12 PM): Production Deployment**
+
+**Pre-deployment checklist:**
+- [ ] **Database backup**: Full backup before schema migration
+- [ ] **Service health check**: Confirm current service is healthy
+- [ ] **Deploy during low traffic**: Early morning preferred
+- [ ] **Monitor channels**: Have Discord test channels ready
+
+**Deployment steps:**
+```bash
+# 1. Backup database
+mongodump --uri="$MONGO_URI" --out backup-$(date +%Y%m%d)
+
+# 2. Deploy code
+git checkout feature/enhanced-discord-messages
+npm install  # In case of any new dependencies
+npm test     # Final test run
+
+# 3. Restart service with monitoring
+pm2 restart discord-newsletter
+pm2 logs discord-newsletter --follow
+```
+
+**Tasks:**
+- [ ] **Deploy enhanced message model**
+- [ ] **Monitor Discord client startup**: Verify connection and config resolution
+- [ ] **Post test messages**: In configured channels and threads
+- [ ] **Verify new field capture**: Check database immediately
+- [ ] **Monitor error rates**: Watch for any new errors or exceptions
+
+**Afternoon (1 PM - 5 PM): Deployment Validation**
+
+**Tasks:**
+- [ ] **Thread message validation**: Confirm thread messages being captured
+- [ ] **Data quality check**: Verify all new fields populating correctly
+- [ ] **API functionality test**: Test all endpoints with new data
+- [ ] **Performance monitoring**: CPU, memory, database query performance
+- [ ] **Error investigation**: Address any deployment issues immediately
+
+#### **Day 6: Issue Resolution & Monitoring**
+
+**Morning (9 AM - 12 PM): Issue Assessment**
+
+**Tasks:**
+- [ ] **Review overnight logs**: Check for any errors or issues
+- [ ] **Data quality audit**: 
+```javascript
+// Check data completeness
+db.messages.find({ 
+  createdAt: { $gte: new Date(Date.now() - 24*60*60*1000) },
+  rawDiscordData: null 
+}).count()
+```
+- [ ] **Thread capture verification**: Confirm threads no longer missing
+- [ ] **Performance analysis**: Compare pre/post deployment metrics
+- [ ] **User impact assessment**: Any reported issues or degraded experience
+
+**Afternoon (1 PM - 5 PM): Fixes & Optimizations**
+
+**Tasks:**
+- [ ] **Address critical issues**: Fix any bugs affecting functionality
+- [ ] **Performance tuning**: Optimize queries if needed  
+- [ ] **Logging adjustments**: Reduce verbose logging if needed
+- [ ] **Configuration tweaks**: Adjust settings based on real usage
+- [ ] **Document issues**: Record problems and solutions for future reference
+
+#### **Day 7: Stabilization & Documentation**
+
+**Morning (9 AM - 12 PM): Final Stabilization**
+
+**Tasks:**
+- [ ] **24-hour stability review**: Confirm no recurring issues
+- [ ] **Data integrity check**: Verify message relationships (threads, replies) correct
+- [ ] **API response validation**: Ensure all endpoints returning expected data
+- [ ] **Client testing**: Test Discord bot functionality end-to-end
+- [ ] **Performance baseline**: Document new performance characteristics
+
+**Afternoon (1 PM - 5 PM): Documentation & Handoff**
+
+**Tasks:**  
+- [ ] **Update CLAUDE.md**: Document new capabilities and schema changes
+- [ ] **Create troubleshooting guide**: Common issues and solutions
+- [ ] **Document configuration options**: Settings vs environment variables
+- [ ] **Performance notes**: Document any performance considerations
+- [ ] **Success metrics**: Document what was achieved vs goals
+
+### **Rollback Plan**
+
+**If critical issues arise:**
+
+**Quick Rollback (< 30 minutes):**
+```bash
+# 1. Revert to previous code
+git checkout main
+pm2 restart discord-newsletter
+
+# 2. Restore database if needed
+mongorestore --uri="$MONGO_URI" backup-$(date +%Y%m%d)
+```
+
+**Rollback triggers:**
+- [ ] Discord client fails to connect
+- [ ] Database queries failing due to schema issues  
+- [ ] Significant performance degradation (>50% slower)
+- [ ] Data corruption or loss detected
+- [ ] Message capture completely broken
+
+### **Success Metrics**
+
+**After Day 7, we should have:**
+- [ ] **Thread messages being captured** (primary goal achieved)
+- [ ] **Zero breaking changes** to existing functionality
+- [ ] **Enhanced message metadata** available for AI processing  
+- [ ] **Settings system foundation** ready for future features
+- [ ] **Stable system performance** comparable to pre-deployment
+- [ ] **Basic operational documentation** for maintenance
+
+**Quantifiable success indicators:**
+- Thread message capture rate > 95%
+- API response times within 10% of baseline
+- Zero critical errors in 24-hour period
+- All existing tests passing
+- Message formatting working for all message types
 
 ### Quality Level: **"Good Enough Plus"**
 - ✅ **Backward compatibility** - Won't break existing functionality
